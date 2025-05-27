@@ -59,13 +59,13 @@ fun HomeScreen(
             Row(modifier = Modifier.fillMaxWidth()) {
                 interests.forEach { interest ->
                     InterestTag(
-                        name = interest.name,
-                        isSelected = selectedInterest == interest.name,
+                        name = interest.interestName,
+                        isSelected = selectedInterest == interest.interestName,
                         onClick = {
-                            if (selectedInterest == interest.name) {
+                            if (selectedInterest == interest.interestName) {
                                 viewModel.onInterestClick(null)
                             } else {
-                                viewModel.onInterestClick(interest.name)
+                                viewModel.onInterestClick(interest.interestName)
                             }
                         }
                     )

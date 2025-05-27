@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kr.ac.uc.test_2025_05_19_k.data.local.UserPreference
-import kr.ac.uc.test_2025_05_19_k.model.Interest
-import kr.ac.uc.test_2025_05_19_k.model.StudyGroup
+import kr.ac.uc.test_2025_05_19_k.network.Interest
+import kr.ac.uc.test_2025_05_19_k.network.StudyGroup
 import kr.ac.uc.test_2025_05_19_k.repository.GroupRepository
 import javax.inject.Inject
 

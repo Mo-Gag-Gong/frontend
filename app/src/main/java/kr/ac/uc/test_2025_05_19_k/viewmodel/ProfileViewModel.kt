@@ -8,6 +8,7 @@ import kr.ac.uc.test_2025_05_19_k.network.ProfileRequest
 import kr.ac.uc.test_2025_05_19_k.repository.ProfileRepository
 import javax.inject.Inject
 import androidx.compose.runtime.*
+import kr.ac.uc.test_2025_05_19_k.network.Interest
 
 @HiltViewModel
 class ProfileInputViewModel @Inject constructor(
@@ -17,22 +18,33 @@ class ProfileInputViewModel @Inject constructor(
     var name by mutableStateOf("")
     var gender by mutableStateOf<String?>(null)
     var phoneNumber by mutableStateOf("")
-    var birthYear by mutableStateOf("")
-
+    var birth by mutableStateOf("")      // "YYYY-MM-DD"
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
 
     fun submitProfile(
+        name: String,
+        gender: String,
+        phone: String,
+        birth: String,
+        selectedInterests: List<Interest>,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
         isLoading = true
+        errorMessage = null
+
+        val birthYearValue = birth.take(4).toIntOrNull() ?: 0
+
+        // 관심사 id 추출!
+        val interestIds = selectedInterests.map { it.interestId }
 
         val profileRequest = ProfileRequest(
             name = name,
             gender = gender ?: "",
-            phoneNumber = phoneNumber,
-            birthYear = birthYear.toIntOrNull() ?: 0
+            phoneNumber = phone,
+            birthYear = birthYearValue,
+            interestIds = interestIds
         )
 
         viewModelScope.launch {

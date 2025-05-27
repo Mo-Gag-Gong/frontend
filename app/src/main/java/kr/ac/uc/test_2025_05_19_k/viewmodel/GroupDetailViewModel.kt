@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kr.ac.uc.test_2025_05_19_k.model.StudyGroupDetail
+import kr.ac.uc.test_2025_05_19_k.network.StudyGroupDetail
 import kr.ac.uc.test_2025_05_19_k.repository.GroupRepository
 import javax.inject.Inject
 

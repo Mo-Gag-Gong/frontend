@@ -6,9 +6,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kr.ac.uc.test_2025_05_19_k.model.request.GroupCreateRequest
 import kr.ac.uc.test_2025_05_19_k.repository.GroupRepository
 import kr.ac.uc.test_2025_05_19_k.data.local.UserPreference
+import kr.ac.uc.test_2025_05_19_k.network.GroupCreateRequest
 import javax.inject.Inject
 
 @HiltViewModel

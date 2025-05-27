@@ -9,7 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kr.ac.uc.test_2025_05_19_k.model.StudyGroup
+import kr.ac.uc.test_2025_05_19_k.network.StudyGroup
 
 @Composable
 fun GroupCard(

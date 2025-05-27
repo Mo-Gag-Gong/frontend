@@ -2,6 +2,7 @@ package kr.ac.uc.test_2025_05_19_k.network
 
 import retrofit2.http.*
 import okhttp3.ResponseBody
+import retrofit2.Call
 import retrofit2.Response
 
 // 🔸 사용자 프로필 업데이트 요청 DTO
@@ -9,7 +10,70 @@ data class ProfileRequest(
     val name: String,
     val gender: String,
     val phoneNumber: String,
-    val birthYear: Int
+    val birthYear: Int,
+    val interestIds: List<Int> = emptyList() // 추가!
+)
+
+data class StudyGroup(
+    val id: Long,
+    val name: String,
+    val description: String,
+    val category: String,
+    val memberCount: Int,
+    val maxMembers: Int
+)
+
+data class StudyGroupDetail(
+    val id: Long,
+    val name: String,
+    val description: String,
+    val category: String,
+    val memberCount: Int,
+    val maxMembers: Int,
+    val alreadyApplied: Boolean
+)
+
+data class UserProfile(
+    val id: Long,
+    val nickname: String,
+    val email: String,
+    val interests: List<Interest>,
+    val profileImageUrl: String
+)
+
+data class GroupCreateRequest(
+    val title: String,
+    val description: String,
+    val requirements: String,
+    val category: String,
+    val maxMembers: Int,
+    val locationName: String
+)
+
+data class LoginRequest(
+    val email: String,
+    val password: String
+)
+
+data class RegisterRequest(
+    val email: String,
+    val password: String,
+    val nickname: String
+)
+
+data class TokenResponse_cy(
+    val accessToken: String,
+    val refreshToken: String,
+    val grantType: String,
+    val accessTokenExpiresIn: Long
+)
+
+data class RefreshTokenRequest(val refreshToken: String)
+
+data class TokenResponse(
+    val accessToken: String,
+    val refreshToken: String,
+    val userId: Int
 )
 
 // 🔸 사용자 프로필 응답 DTO
@@ -37,13 +101,27 @@ data class Interest(
 data class OnboardingStatusResponse(
     val onboardingCompleted: Boolean
 )
+data class AuthUserProfile(
+    val userId: Long,
+    val email: String,
+    val profileImage: String,
+    val oauthId: String,
+    val provider: String,
+    val role: String,
+    val createdAt: String,
+    val updatedAt: String
+)
+
+
 
 // ✅ 서버 API를 호출하는 Retrofit 인터페이스
 interface ApiService {
 
     // 🔹 [GET] 사용자 자신의 프로필 조회
-    @GET("/api/users/profile")
-    suspend fun getMyProfile(): ProfileResponse
+//    @GET("/api/users/profile")
+//    suspend fun getMyProfile(): ProfileResponse
+    @GET("/api/auth/me")
+    suspend fun getMyProfile(): AuthUserProfile
 
     // 🔹 [PUT] 사용자 프로필 업데이트
     @PUT("/api/users/profile")
@@ -81,5 +159,38 @@ interface ApiService {
 
     // 🔹 [POST] 토큰 리프레시 요청
     @POST("/api/auth/token/refresh")
-    suspend fun refreshToken(): ResponseBody
+    suspend fun refreshToken(
+        @Body refreshTokenRequest: RefreshTokenRequest
+    ): Response<TokenResponse_cy>
+
+    @GET("/api/groups")
+    suspend fun getGroups(
+        @retrofit2.http.Query("region") region: String,
+        @retrofit2.http.Query("keyword") keyword: String?,
+        @retrofit2.http.Query("interest") interest: String?
+    ): List<StudyGroup>
+
+    @FormUrlEncoded
+    @POST("oauth/code") // 예: 서버에서 이 엔드포인트를 열어둔 경우
+    fun sendAuthCode(@Field("code") code: String): Call<ResponseBody>
+    @GET("/api/groups/{id}")
+    suspend fun getGroupDetail(@Path("id") groupId: Long): StudyGroupDetail
+
+    @POST("/api/groups/{groupId}/apply")
+    suspend fun applyToGroup(@Path("groupId") groupId: Long)
+
+    @POST("/api/groups")
+    suspend fun createGroup(@Body request: GroupCreateRequest)
+
+    @POST("/api/users/login")
+    suspend fun login(
+        @Body request: LoginRequest
+    ): TokenResponse_cy
+
+    @POST("/api/users/join")
+    suspend fun register(
+        @Body request: RegisterRequest
+    ): Void
+
+
 }
