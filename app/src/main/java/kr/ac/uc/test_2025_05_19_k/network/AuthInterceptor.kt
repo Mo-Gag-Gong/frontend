@@ -37,7 +37,7 @@ import okhttp3.Response
 class AuthInterceptor(private val context: Context) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
-        val token = prefs.getString("accessToken", null)
+        val token = prefs.getString("access_token", null)
 
         // ✅ 토큰 로그 출력
         Log.d("AuthInterceptor", "accessToken: $token")
