@@ -121,3 +121,5 @@ fun GroupCreateScreen(
         }
     }
 }
+
+annotation class GroupCreateScreen

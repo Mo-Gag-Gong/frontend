@@ -66,3 +66,5 @@ fun GroupDetailScreen(
         }
     }
 }
+
+annotation class GroupDetailScreen
