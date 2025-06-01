@@ -2,6 +2,7 @@ package kr.ac.uc.test_2025_05_19_k.network.api
 
 import kr.ac.uc.test_2025_05_19_k.model.StudyGroup
 import kr.ac.uc.test_2025_05_19_k.model.StudyGroupDetail
+import kr.ac.uc.test_2025_05_19_k.model.group.StudyGroupResponseDto
 import kr.ac.uc.test_2025_05_19_k.model.request.GroupCreateRequest
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -18,7 +19,7 @@ interface GroupApi {
     ): List<StudyGroup>
 
     @GET("/api/groups/{id}")
-    suspend fun getGroupDetail(@Path("id") groupId: Long): StudyGroupDetail
+    suspend fun getGroupDetail(@Path("id") groupId: Long): StudyGroupResponseDto
 
     @POST("/api/groups/{groupId}/apply")
     suspend fun applyToGroup(@Path("groupId") groupId: Long)
