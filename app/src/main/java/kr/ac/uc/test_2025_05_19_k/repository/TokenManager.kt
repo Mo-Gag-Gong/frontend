@@ -17,6 +17,7 @@ class TokenManager(context: Context) {
 
     fun getAccessToken(): String? = prefs.getString("accessToken", null)
     fun getRefreshToken(): String? = prefs.getString("refreshToken", null)
+    fun hasValidToken(): Boolean = !getAccessToken().isNullOrBlank()
 
     fun clearTokens() {
         prefs.edit().clear().apply()
