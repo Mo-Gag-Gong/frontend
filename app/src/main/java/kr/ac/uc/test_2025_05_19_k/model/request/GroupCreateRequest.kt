@@ -4,7 +4,7 @@ data class GroupCreateRequest(
     val title: String,
     val description: String,
     val requirements: String,
-    val category: String,
+    val interest: String,
     val maxMembers: Int,
     val locationName: String
 )
