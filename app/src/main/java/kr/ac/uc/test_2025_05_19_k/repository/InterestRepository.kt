@@ -6,22 +6,22 @@ import kr.ac.uc.test_2025_05_19_k.network.ApiService
 import javax.inject.Inject
 import kotlin.collections.map
 
+// InterestRepository.kt
 class InterestRepository @Inject constructor(
     private val api: ApiService
 ) {
-    // 서버에서 관심사 리스트 가져오기 (토큰은 Interceptor에서 자동 추가)
     suspend fun getAllInterests(): List<Interest> {
         return try {
             val dtoList = api.getAllInterests()
-            Log.d("InterestRepository", "서버에서 관심사 수신: ${dtoList.size}개, 데이터=$dtoList")
+            Log.d("InterestRepository", "서버에서 관심사 수신: ${dtoList.size}개, 데이터=$dtoList") // 이 로그를 확인
             dtoList.map { dto ->
                 Interest(
-                    id = dto.interestId,      // 서버 응답의 interestId
-                    name = dto.interestName   // 서버 응답의 interestName
+                    id = dto.interestId,
+                    name = dto.interestName
                 )
             }
         } catch (e: Exception) {
-            Log.e("InterestRepository", "관심사 목록 조회 실패", e)
+            Log.e("InterestRepository", "관심사 목록 조회 실패", e) // 이 로그를 확인
             emptyList()
         }
     }

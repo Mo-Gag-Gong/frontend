@@ -13,14 +13,13 @@ import kr.ac.uc.test_2025_05_19_k.model.Interest
 import kr.ac.uc.test_2025_05_19_k.model.StudyGroup
 import kr.ac.uc.test_2025_05_19_k.repository.GroupRepository
 import kr.ac.uc.test_2025_05_19_k.repository.InterestRepository
-import kr.ac.uc.test_2025_05_19_k.model.PageStudyGroupDto
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     application: Application,
     private val groupRepository: GroupRepository,
-    private val interestRepository: InterestRepository // InterestRepository 추가
+    private val interestRepository: InterestRepository
 ) : AndroidViewModel(application) {
 
     private val userPreference = UserPreference(application)
@@ -45,41 +44,50 @@ class HomeViewModel @Inject constructor(
             try {
                 val location = userPreference.getLocation()
                 _region.value = location
-
-                // 전체 관심사 목록 로드
-                val fetchedInterests = interestRepository.getAllInterests()
-                _interests.value = fetchedInterests
-
-                fetchGroups() // 지역 및 (초기에는 없는) 필터 기준으로 그룹 로드
+                fetchInterests()
+                fetchGroups()
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "초기 사용자 정보 또는 관심사/그룹 불러오기 실패: ${e.message}")
-                _interests.value = emptyList() // 관심사 로드 실패 시 빈 리스트
-                _groupList.value = emptyList() // 그룹 로드 실패 시 빈 리스트
+                Log.e("HomeViewModel", "초기 데이터 불러오기 실패: ${e.message}")
+                _groupList.value = emptyList()
+                _interests.value = emptyList()
             }
         }
     }
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
-        fetchGroups() // 검색어 변경 시 그룹 목록 다시 로드
     }
 
     fun onInterestClick(interest: String?) {
-        _selectedInterest.value = if (_selectedInterest.value == interest) null else interest
-        fetchGroups() // 선택된 관심사 변경 시 그룹 목록 다시 로드
+        _selectedInterest.value = interest
+    }
+
+    private fun fetchInterests() {
+        viewModelScope.launch {
+            try {
+                val allInterests = interestRepository.getAllInterests()
+                _interests.value = allInterests
+                Log.d("HomeViewModel", "관심사 목록 업데이트 성공: ${allInterests.size}개")
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "관심사 목록 불러오기 실패: ${e.message}")
+                _interests.value = emptyList()
+            }
+        }
     }
 
     fun fetchGroups() {
-        val keyword = _searchQuery.value.ifBlank { null }
-        val interest = _selectedInterest.value
+        val keyword = _searchQuery.value
+        val interest = _selectedInterest.value // 선택된 관심사 값
         val region = _region.value
+
+        Log.d("HomeViewModel", "fetchGroups 호출됨 - region: $region, keyword: $keyword, interest: $interest") // 로그 추가
 
         viewModelScope.launch {
             try {
-                // groupRepository.getGroups는 List<StudyGroup>을 반환합니다.
-                val resultList: List<StudyGroup> = groupRepository.getGroups(region, keyword, interest)
-                _groupList.value = resultList // List<StudyGroup>을 _groupList에 직접 할당
+                val result = groupRepository.getGroups(region, keyword, interest)
+                _groupList.value = result
+                Log.d("HomeViewModel", "그룹 불러오기 성공: ${result.size}개, 데이터: $result") // 로그 추가
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "그룹 불러오기 실패 ViewModel: ${e.message}", e)
+                Log.e("HomeViewModel", "그룹 불러오기 실패: ${e.message}")
                 _groupList.value = emptyList()
             }
         }

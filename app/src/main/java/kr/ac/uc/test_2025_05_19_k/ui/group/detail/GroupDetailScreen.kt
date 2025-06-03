@@ -8,13 +8,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+//import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import kr.ac.uc.test_2025_05_19_k.viewmodel.GroupDetailViewModel
 
 @Composable
 fun GroupDetailScreen(
     groupId: Long,
-    viewModel: GroupDetailViewModel = viewModel(),
+    viewModel: GroupDetailViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
