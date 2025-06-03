@@ -23,7 +23,7 @@ class GroupCreateViewModel @Inject constructor(
         title: String,
         description: String,
         requirements: String,
-        category: String,
+        category: String, // ViewModel 함수 파라미터는 'category' 유지 가능
         maxMembers: Int,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
@@ -34,7 +34,7 @@ class GroupCreateViewModel @Inject constructor(
             title = title,
             description = description,
             requirements = requirements,
-            category = category,
+            interest = category, // 'category = category' 에서 'interest = category' 로 수정
             maxMembers = maxMembers,
             locationName = location
         )

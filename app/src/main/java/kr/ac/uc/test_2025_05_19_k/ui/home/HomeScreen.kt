@@ -62,11 +62,7 @@ fun HomeScreen(
                         name = interest.name,
                         isSelected = selectedInterest == interest.name,
                         onClick = {
-                            if (selectedInterest == interest.name) {
-                                viewModel.onInterestClick(null)
-                            } else {
-                                viewModel.onInterestClick(interest.name)
-                            }
+                            viewModel.onInterestClick(interest.name)
                         }
                     )
                 }
@@ -76,7 +72,7 @@ fun HomeScreen(
 
             groupList.forEach { group ->
                 GroupCard(group = group) {
-                    onGroupClick(group.id)
+                    onGroupClick(group.groupId)
                 }
             }
         }

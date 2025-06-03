@@ -40,7 +40,7 @@ fun GroupDetailScreen(
             .fillMaxSize()
             .padding(16.dp)) {
 
-            Text(text = group.name, style = MaterialTheme.typography.headlineSmall)
+            Text(text = group.title, style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = group.description)
             Spacer(modifier = Modifier.height(16.dp))
@@ -53,7 +53,7 @@ fun GroupDetailScreen(
                 )
             } else {
                 Button(
-                    onClick = { viewModel.applyToGroup(group.id) },
+                    onClick = { viewModel.applyToGroup(group.groupId) },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("가입 신청")
