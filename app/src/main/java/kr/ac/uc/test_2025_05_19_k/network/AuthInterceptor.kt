@@ -1,53 +1,70 @@
-//package kr.ac.uc.test_2025_05_19_k.network
-//
-//import android.content.Context
-//import okhttp3.Interceptor
-//import okhttp3.Response
-//
-//// Interceptor를 상속받아 accessToken을 요청 헤더에 자동으로 붙여주는 클래스 정의
-//class AuthInterceptor(private val context: Context) : Interceptor {
-//
-//    // 요청 가로채기 함수 오버라이드
-//    override fun intercept(chain: Interceptor.Chain): Response {
-//        // SharedPreferences에서 저장된 accessToken을 가져옴
-//        val token = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
-//            .getString("access_token", null)
-//
-//        // token이 존재하면 Authorization 헤더 추가
-//        val newRequest = if (token != null) {
-//            chain.request().newBuilder()
-//                .addHeader("Authorization", "Bearer $token") // 토큰 붙이기
-//                .build()
-//        } else {
-//            chain.request() // 토큰 없으면 원래 요청 그대로 사용
-//        }
-//
-//        // 실제 네트워크 요청 진행
-//        return chain.proceed(newRequest)
-//    }
-//}
-
 package kr.ac.uc.test_2025_05_19_k.network
 
 import android.content.Context
-import android.util.Log
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
+import dagger.Lazy
+import kr.ac.uc.test_2025_05_19_k.model.RefreshTokenRequest
+import kr.ac.uc.test_2025_05_19_k.network.ApiService
 
-class AuthInterceptor(private val context: Context) : Interceptor {
+
+import kr.ac.uc.test_2025_05_19_k.repository.TokenManager
+
+class AuthInterceptor(
+    private val tokenManager: TokenManager,
+    private val apiService: Lazy<ApiService>
+
+) : Interceptor {
+
+
+
     override fun intercept(chain: Interceptor.Chain): Response {
-        val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
-        val token = prefs.getString("access_token", null)
+        var request = chain.request()
+        val accessToken = tokenManager.getAccessToken()
 
-        // ✅ 토큰 로그 출력
-        Log.d("AuthInterceptor", "accessToken: $token")
-
-        val requestBuilder = chain.request().newBuilder()
-
-        if (!token.isNullOrEmpty()) {
-            requestBuilder.addHeader("Authorization", "Bearer $token")
+        // 1. accessToken이 있으면 Authorization 헤더에 추가
+        if (!accessToken.isNullOrBlank()) {
+            request = request.newBuilder()
+                .addHeader("Authorization", "Bearer $accessToken")
+                .build()
         }
 
-        return chain.proceed(requestBuilder.build())
+        var response = chain.proceed(request)
+
+        // 2. 만약 401(Unauthorized)이면 refresh 시도 (자동 갱신)
+        if (response.code == 401) {
+            runBlocking {
+                val refreshed = refreshTokenIfNeeded(tokenManager, apiService.get())
+                if (refreshed) {
+                    // 토큰 갱신 성공 시 Authorization 헤더에 새 토큰으로 재요청
+                    val newAccessToken = tokenManager.getAccessToken()
+                    val newRequest = request.newBuilder()
+                        .removeHeader("Authorization")
+                        .addHeader("Authorization", "Bearer $newAccessToken")
+                        .build()
+                    response.close()
+                    response = chain.proceed(newRequest)
+                } else {
+                    // 리프레시도 실패 → 로그아웃 처리 등 (토큰 삭제)
+                    tokenManager.clearTokens()
+                }
+            }
+        }
+        return response
+    }
+
+    // 토큰 새로고침 함수
+    suspend fun refreshTokenIfNeeded(tokenManager: TokenManager, apiService: ApiService): Boolean {
+        val refreshToken = tokenManager.getRefreshToken() ?: return false
+        val response = apiService.refreshToken(RefreshTokenRequest(refreshToken))
+        return if (response.isSuccessful && response.body() != null) {
+            val tokenRes = response.body()!!
+            tokenManager.saveTokens(tokenRes.accessToken, tokenRes.refreshToken)
+            true
+        } else {
+            tokenManager.clearTokens()
+            false
+        }
     }
 }

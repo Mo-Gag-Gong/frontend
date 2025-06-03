@@ -1,25 +1,19 @@
 package kr.ac.uc.test_2025_05_19_k.repository
 
-import kr.ac.uc.test_2025_05_19_k.model.common.CommonPageResponse
-import kr.ac.uc.test_2025_05_19_k.model.group.StudyGroupResponseDto
+import kr.ac.uc.test_2025_05_19_k.model.StudyGroup
+import kr.ac.uc.test_2025_05_19_k.model.StudyGroupDetail
 import kr.ac.uc.test_2025_05_19_k.network.api.GroupApi
-import kr.ac.uc.test_2025_05_19_k.model.request.GroupCreateRequestDto
+import kr.ac.uc.test_2025_05_19_k.model.request.GroupCreateRequest
 import javax.inject.Inject
 
 class GroupRepository @Inject constructor(
     private val groupApi: GroupApi
 ) {
-    suspend fun getGroups(
-        region: String,
-        keyword: String?,
-        interest: String?,
-        page: Int? = null,
-        size: Int? = null
-    ): CommonPageResponse<StudyGroupResponseDto> {
-        return groupApi.getGroups(region, keyword, interest, page, size)
+    suspend fun getGroups(region: String, keyword: String?, interest: String?): List<StudyGroup> {
+        return groupApi.getGroups(region, keyword, interest)
     }
 
-    suspend fun getGroupDetail(groupId: Long): StudyGroupResponseDto {
+    suspend fun getGroupDetail(groupId: Long): StudyGroupDetail {
         return groupApi.getGroupDetail(groupId)
     }
 
@@ -27,7 +21,7 @@ class GroupRepository @Inject constructor(
         groupApi.applyToGroup(groupId)
     }
 
-    suspend fun createGroup(request: GroupCreateRequestDto) {
+    suspend fun createGroup(request: GroupCreateRequest) {
         groupApi.createGroup(request)
     }
 

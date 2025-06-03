@@ -9,11 +9,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kr.ac.uc.test_2025_05_19_k.model.group.StudyGroupResponseDto
+import kr.ac.uc.test_2025_05_19_k.model.StudyGroup
 
 @Composable
 fun GroupCard(
-    group: StudyGroupResponseDto, // 파라미터 타입을 StudyGroupResponseDto로 변경
+    group: StudyGroup,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
@@ -26,14 +26,14 @@ fun GroupCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = group.title, // group.name에서 group.title로 변경
+                text = group.name,
                 style = MaterialTheme.typography.titleMedium
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = group.description, // 변경 없음
+                text = group.description,
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 2
             )
@@ -42,15 +42,13 @@ fun GroupCard(
 
             Row {
                 Text(
-                    text = "#${group.interestName}", // group.category에서 group.interestName으로 변경
+                    text = "#${group.category}",
                     style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.padding(end = 12.dp)
                 )
 
                 Text(
-                    // group.memberCount에서 group.currentMembers로 변경
-                    // 필요하다면 최대 인원도 함께 표시: "인원 ${group.currentMembers}/${group.maxMembers}명"
-                    text = "인원 ${group.currentMembers}명",
+                    text = "인원 ${group.memberCount}명",
                     style = MaterialTheme.typography.labelSmall
                 )
             }

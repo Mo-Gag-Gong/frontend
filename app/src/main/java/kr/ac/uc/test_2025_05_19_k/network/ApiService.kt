@@ -1,12 +1,18 @@
 package kr.ac.uc.test_2025_05_19_k.network
 
-import kr.ac.uc.test_2025_05_19_k.model.common.InterestDto
-import kr.ac.uc.test_2025_05_19_k.model.request.ProfileUpdateRequest
-import kr.ac.uc.test_2025_05_19_k.model.user.OnboardingStatusResponse
-import kr.ac.uc.test_2025_05_19_k.model.user.UserProfileResponse
+import kr.ac.uc.test_2025_05_19_k.model.Interest
+import kr.ac.uc.test_2025_05_19_k.model.InterestDto
+import kr.ac.uc.test_2025_05_19_k.model.OnboardingStatusResponse
+import kr.ac.uc.test_2025_05_19_k.model.ProfileUpdateRequest
+import kr.ac.uc.test_2025_05_19_k.model.RefreshTokenRequest
+import kr.ac.uc.test_2025_05_19_k.model.UserProfileResponse
+import kr.ac.uc.test_2025_05_19_k.model.auth.TokenResponse
+
+
 import retrofit2.http.*
 import okhttp3.ResponseBody
 import retrofit2.Response
+
 
 
 // ✅ 서버 API를 호출하는 Retrofit 인터페이스
@@ -28,11 +34,12 @@ interface ApiService {
 
     // 🔹 [GET] 내가 선택한 관심사 목록 조회
     @GET("/api/users/my-interests")
-    suspend fun getMyInterests(): List<InterestDto>
+    suspend fun getMyInterests(): List<Interest>
 
     // 🔹 [GET] 전체 관심사 목록 조회
     @GET("/api/users/interests")
     suspend fun getAllInterests(): List<InterestDto>
+
 
     // 🔹 [POST] 관심사 추가
     @POST("/api/users/interests/{interestId}")
@@ -52,5 +59,8 @@ interface ApiService {
 
     // 🔹 [POST] 토큰 리프레시 요청
     @POST("/api/auth/token/refresh")
-    suspend fun refreshToken(): ResponseBody
+    suspend fun refreshToken(
+        @Body refreshTokenRequest: RefreshTokenRequest
+    ): Response<TokenResponse>
+
 }

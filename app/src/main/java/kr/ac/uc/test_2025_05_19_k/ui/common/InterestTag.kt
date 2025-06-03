@@ -24,5 +24,3 @@ fun InterestTag(
         modifier = Modifier.padding(end = 8.dp)
     )
 }
-
-annotation class InterestTag

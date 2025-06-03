@@ -23,7 +23,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.7"
+        kotlinCompilerExtensionVersion = "1.5.13"
     }
 
     kotlinOptions {
@@ -38,14 +38,19 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.21")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
-    // Jetpack Compose (BOM 안정 버전)
-    implementation(platform("androidx.compose:compose-bom:2023.10.01"))
+    implementation(platform("androidx.compose:compose-bom:2024.05.00")) // 최신버전
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation(libs.androidx.appcompat)
+
+
+
     debugImplementation("androidx.compose.ui:ui-tooling")
+
+
+    // Jetpack Compose (BOM 안정 버전)
+    implementation(libs.androidx.appcompat)
 
     // Lifecycle (2.6.1)
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
@@ -76,6 +81,9 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.2.2")
     // implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1") // 필요 시
     implementation("androidx.browser:browser:1.7.0")
+
+    implementation ("com.google.accompanist:accompanist-permissions:0.34.0")
+    implementation("com.google.android.gms:play-services-location:21.2.0")
 
 
 
