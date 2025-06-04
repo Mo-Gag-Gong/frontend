@@ -30,7 +30,7 @@ class HomeViewModel @Inject constructor(
     private val _interests = MutableStateFlow<List<Interest>>(emptyList())
     val interests: StateFlow<List<Interest>> = _interests
 
-    private val _searchQuery = MutableStateFlow("")
+    private val _searchQuery = MutableStateFlow("") // 검색 화면에서 사용할 수 있도록 유지
     val searchQuery: StateFlow<String> = _searchQuery
 
     private val _selectedInterest = MutableStateFlow<String?>(null)
@@ -45,7 +45,7 @@ class HomeViewModel @Inject constructor(
                 val location = userPreference.getLocation()
                 _region.value = location
                 fetchInterests()
-                fetchGroups()
+                fetchGroups() // 초기 그룹 로드
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "초기 데이터 불러오기 실패: ${e.message}")
                 _groupList.value = emptyList()
@@ -74,8 +74,8 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun fetchGroups() {
-        val keyword = _searchQuery.value
+    fun fetchGroups(query: String? = null) { // query 파라미터를 추가하여 검색어 필터링 지원
+        val keyword = query ?: _searchQuery.value // 파라미터로 넘어온 query가 있으면 사용, 없으면 _searchQuery.value 사용
         val interest = _selectedInterest.value // 선택된 관심사 값
         val region = _region.value
 

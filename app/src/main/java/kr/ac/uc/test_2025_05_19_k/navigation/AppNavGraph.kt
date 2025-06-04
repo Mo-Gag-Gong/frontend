@@ -21,14 +21,14 @@ import androidx.compose.runtime.remember // remember 추가
 import androidx.compose.ui.platform.LocalContext // LocalContext 추가
 import kr.ac.uc.test_2025_05_19_k.data.local.UserPreference // UserPreference import 추가
 import kr.ac.uc.test_2025_05_19_k.ui.profile.SignInScreen //
-import kr.ac.uc.test_2025_05_19_k.ui.gps.RegionSettingScreen //
 
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.navigation.compose.currentBackStackEntryAsState
 import android.util.Log
 import kotlinx.coroutines.delay
-
+import kr.ac.uc.test_2025_05_19_k.ui.search.SearchScreen // SearchScreen import
+import kr.ac.uc.test_2025_05_19_k.ui.search.SearchResultScreen // SearchResultScreen import
 
 
 @Composable
@@ -149,11 +149,15 @@ fun AppNavGraph(
         // 7. 홈 화면
         composable("home") { //
             HomeScreen( //
+                navController = navController, // NavController 전달
                 onGroupClick = { groupId ->
                     navController.navigate("group_detail/$groupId") //
                 },
                 onCreateGroupClick = {
                     navController.navigate("group_create") //
+                },
+                onNavigateToSearch = {
+                    navController.navigate("search") // 검색 화면으로 이동
                 }
             )
         }
@@ -168,6 +172,31 @@ fun AppNavGraph(
         // 9. 그룹 생성
         composable("group_create") { //
             GroupCreateScreen(navController = navController) //
+        }
+
+        // 10. 검색 화면
+        composable("search") {
+            SearchScreen(
+                navController = navController,
+                onSearch = { query ->
+                    navController.navigate("search_result/${query}")
+                }
+            )
+        }
+
+        // 11. 검색 결과 화면
+        composable(
+            "search_result/{query}",
+            arguments = listOf(navArgument("query") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val query = backStackEntry.arguments?.getString("query") ?: ""
+            SearchResultScreen(
+                navController = navController,
+                searchQuery = query,
+                onGroupClick = { groupId ->
+                    navController.navigate("group_detail/$groupId")
+                }
+            )
         }
     }
 }
