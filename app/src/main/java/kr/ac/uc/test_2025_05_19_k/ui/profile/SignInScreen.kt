@@ -1,3 +1,4 @@
+// app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/profile/SignInScreen.kt
 package kr.ac.uc.test_2025_05_19_k.ui.profile
 
 import android.content.Context
@@ -22,12 +23,20 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.withStyle
 import kr.ac.uc.test_2025_05_19_k.R
 import kr.ac.uc.test_2025_05_19_k.repository.TokenManager
+import dagger.hilt.android.EntryPointAccessors
+import android.app.Application // Application import 추가
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 
 @Composable
 fun SignInScreen(onNavigateNext: () -> Unit = {}) {
     val context = LocalContext.current
-    val tokenManager = remember { TokenManager(context) } // 토큰 매니저 준비
+
+    // Hilt를 통해 TokenManager 인스턴스 가져오기
+    val tokenManager = remember {
+        val app = context.applicationContext as Application
+        EntryPointAccessors.fromApplication(app, TokenManagerEntryPoint::class.java).getTokenManager()
+    }
 
     // ① 토큰이 이미 있으면 자동으로 다음 화면 이동
     LaunchedEffect(Unit) {
@@ -119,6 +128,12 @@ fun Google_Login(context: Context) {
         .build()
 
     customTabsIntent.launchUrl(context, Uri.parse(loginUrl))
+}
+
+@dagger.hilt.InstallIn(dagger.hilt.components.SingletonComponent::class)
+@dagger.hilt.EntryPoint
+interface TokenManagerEntryPoint {
+    fun getTokenManager(): TokenManager
 }
 
 @Preview(showBackground = true)

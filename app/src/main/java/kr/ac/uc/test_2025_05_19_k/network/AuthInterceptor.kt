@@ -1,3 +1,4 @@
+// app/src/main/java/kr/ac/uc/test_2025_05_19_k/network/AuthInterceptor.kt
 package kr.ac.uc.test_2025_05_19_k.network
 
 import android.content.Context
@@ -70,7 +71,8 @@ class AuthInterceptor(
         val response = apiService.refreshToken(RefreshTokenRequest(refreshToken))
         return if (response.isSuccessful && response.body() != null) {
             val tokenRes = response.body()!!
-            tokenManager.saveTokens(tokenRes.accessToken, tokenRes.refreshToken)
+            // userId를 추가로 전달
+            tokenManager.saveTokens(tokenRes.accessToken, tokenRes.refreshToken, tokenRes.userId) // userId 추가
             Log.d("AuthInterceptor", "리프레시 토큰으로 AccessToken 갱신 성공.")
             true
         } else {

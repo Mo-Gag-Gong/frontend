@@ -1,3 +1,4 @@
+// app/src/main/java/kr/ac/uc/test_2025_05_19_k/di/NetworkModule.kt
 package kr.ac.uc.test_2025_05_19_k.di
 
 import android.content.Context

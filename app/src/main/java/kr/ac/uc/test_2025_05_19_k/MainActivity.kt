@@ -1,3 +1,4 @@
+// app/src/main/java/kr/ac/uc/test_2025_05_19_k/MainActivity.kt
 package kr.ac.uc.test_2025_05_19_k
 
 import android.os.Bundle
@@ -11,6 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kr.ac.uc.test_2025_05_19_k.data.local.UserPreference //
 import kr.ac.uc.test_2025_05_19_k.navigation.AppNavGraph //
 import kr.ac.uc.test_2025_05_19_k.ui.theme.MogackoTheme //
+import kr.ac.uc.test_2025_05_19_k.repository.TokenManager
 import javax.inject.Inject
 
 @AndroidEntryPoint // Hilt를 사용한 의존성 주입을 위해 필요
@@ -18,6 +20,8 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var userPreference: UserPreference // UserPreference 주입
+    @Inject
+    lateinit var tokenManager: TokenManager // TokenManager 주입
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +32,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     // 로그인 상태 및 온보딩 완료 상태 확인
-                    val isLoggedIn = userPreference.getAccessToken() != null //
+                    val isLoggedIn = tokenManager.hasValidToken() // TokenManager로 로그인 상태 확인
                     val isOnboardingComplete = userPreference.isOnboardingCompleted() //
 
                     // 시작 화면 동적 결정
