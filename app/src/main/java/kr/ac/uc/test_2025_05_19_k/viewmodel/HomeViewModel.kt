@@ -31,7 +31,7 @@ class HomeViewModel @Inject constructor(
     private val _interests = MutableStateFlow<List<Interest>>(emptyList())
     val interests: StateFlow<List<Interest>> = _interests
 
-    private val _searchQuery = MutableStateFlow("") // 검색 화면에서 사용할 수 있도록 유지
+    private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
 
     private val _selectedInterest = MutableStateFlow<String?>(null)
@@ -40,14 +40,11 @@ class HomeViewModel @Inject constructor(
     private val _groupList = MutableStateFlow<List<StudyGroup>>(emptyList())
     val groupList: StateFlow<List<StudyGroup>> = _groupList
 
-    // ✅ 추가: 최근 검색어 StateFlow
     private val _recentSearches = MutableStateFlow<List<String>>(emptyList())
     val recentSearches: StateFlow<List<String>> = _recentSearches
 
     init {
-        // ViewModel 초기화 시 지역명, 관심사, 초기 그룹 목록 로드
         initUser()
-        // ✅ 추가: ViewModel 초기화 시 최근 검색어 로드
         loadRecentSearches()
     }
 
@@ -56,8 +53,11 @@ class HomeViewModel @Inject constructor(
             try {
                 val location = userPreference.getLocation()
                 _region.value = location
-                fetchInterests()
-                fetchGroups() // 초기 그룹 로드 (홈 화면용)
+                Log.d("HomeViewModel", "사용자 지역 정보 로드: ${_region.value}")
+                fetchInterests() // 관심사 목록 먼저 로드
+                // ViewModel 초기화 시 홈 화면의 그룹 목록을 지역 기반으로 로드합니다.
+                // 초기에는 선택된 관심사가 없으므로 null로 호출합니다.
+                fetchGroups(query = null, interestNameToFilter = _selectedInterest.value)
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "초기 데이터 불러오기 실패: ${e.message}")
                 _groupList.value = emptyList()
@@ -65,12 +65,17 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
     }
 
-    fun onInterestClick(interest: String?) {
-        _selectedInterest.value = interest
+    fun onInterestClick(interestName: String?) {
+        _selectedInterest.value = interestName
+        Log.d("HomeViewModel", "관심사 선택 변경: $interestName. 그룹 목록 새로고침.")
+        // 관심사 선택이 변경되면 홈 화면의 그룹 목록을 다시 불러옵니다.
+        // 검색어는 없으므로 query는 null, 변경된 관심사를 interestNameToFilter로 전달합니다.
+        fetchGroups(query = null, interestNameToFilter = _selectedInterest.value)
     }
 
     private fun fetchInterests() {
@@ -78,61 +83,82 @@ class HomeViewModel @Inject constructor(
             try {
                 val allInterests = interestRepository.getAllInterests()
                 _interests.value = allInterests
-                Log.d("HomeViewModel", "관심사 목록 업데이트 성공: ${allInterests.size}개")
+                Log.d("HomeViewModel", "관심사 목록 로드 성공: ${allInterests.size}개")
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "관심사 목록 불러오기 실패: ${e.message}")
+                Log.e("HomeViewModel", "관심사 목록 로드 실패: ${e.message}")
                 _interests.value = emptyList()
             }
         }
     }
 
-    fun fetchGroups(query: String? = null) { // query 파라미터를 추가하여 검색어 필터링 지원
-        val keyword = query // 검색 화면에서 넘어온 키워드
-        val interest = _selectedInterest.value // 선택된 관심사 값
-        val region = _region.value // 현재 설정된 지역
+    fun fetchGroups(query: String? = null, interestNameToFilter: String? = _selectedInterest.value) {
+        val currentRegion = _region.value
+        val keywordForSearch = query
 
-        Log.d("HomeViewModel", "fetchGroups 호출됨 - region: $region, keyword: $keyword, interest: $interest")
+        Log.d("HomeViewModel", "fetchGroups 시작 - Region: $currentRegion, Query: $keywordForSearch, InterestFilter: $interestNameToFilter")
 
         viewModelScope.launch {
             try {
-                val result = if (!keyword.isNullOrBlank()) {
-                    // ✅ 변경: 키워드가 있으면 searchGroups API 사용
-                    groupRepository.searchGroups(keyword)
+                val groupsFromServer: List<StudyGroup>
+                if (!keywordForSearch.isNullOrBlank()) {
+                    // 검색 결과 화면 로직: 검색 API 호출
+                    Log.d("HomeViewModel", "SearchGroups API 호출 - Keyword: $keywordForSearch")
+                    groupsFromServer = groupRepository.searchGroups(keyword = keywordForSearch)
+                    Log.d("HomeViewModel", "SearchGroups API 결과 수신: ${groupsFromServer.size}개")
                 } else {
-                    // ✅ 변경: 키워드가 없으면 지역 및 관심사 필터링 사용
-                    groupRepository.getGroups(region, null, interest) // 일반 목록 조회 (홈 화면용)
+                    // 홈 화면 로직: 지역 및 (서버에서 지원한다면) 관심사로 필터링된 그룹 목록 API 호출
+                    // API_Final.md에 따르면 getGroups는 region과 interest 파라미터를 받습니다.
+                    Log.d("HomeViewModel", "GetGroups API 호출 - Region: $currentRegion, Interest: $interestNameToFilter")
+                    groupsFromServer = groupRepository.getGroups(region = currentRegion, interest = interestNameToFilter, keyword = null)
+                    Log.d("HomeViewModel", "GetGroups API 결과 수신: ${groupsFromServer.size}개")
                 }
-                _groupList.value = result
-                Log.d("HomeViewModel", "그룹 불러오기 성공: ${result.size}개, 데이터: $result")
+
+                // --- 클라이언트 사이드 필터링 ---
+                // 1. 지역 필터링 (항상 적용)
+                // UserPreference에 저장된 지역명과 StudyGroup의 locationName이 정확히 일치하는 경우만 필터링
+                val regionFilteredGroups = groupsFromServer.filter { group ->
+                    group.locationName == currentRegion
+                }
+                Log.d("HomeViewModel", "지역($currentRegion) 필터링 후: ${regionFilteredGroups.size}개")
+
+                // 2. 관심사 필터링 (홈 화면이고, 관심사가 선택된 경우에만 적용)
+                val finalFilteredGroups = if (keywordForSearch.isNullOrBlank() && !interestNameToFilter.isNullOrBlank()) {
+                    regionFilteredGroups.filter { group ->
+                        group.interestName == interestNameToFilter
+                    }
+                } else {
+                    regionFilteredGroups // 검색 시에는 관심사 필터링은 ViewModel 레벨에서 추가로 하지 않음 (서버 검색 결과 존중 또는 별도 UI 필요)
+                }
+                Log.d("HomeViewModel", "관심사($interestNameToFilter) 필터링 후: ${finalFilteredGroups.size}개")
+
+                _groupList.value = finalFilteredGroups
+                Log.d("HomeViewModel", "최종 UI 그룹 목록 업데이트: ${finalFilteredGroups.size}개. 데이터: $finalFilteredGroups")
+
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "그룹 불러오기 실패: ${e.message}")
+                Log.e("HomeViewModel", "그룹 불러오기 중 오류 발생: ${e.message}", e)
                 _groupList.value = emptyList()
             }
         }
     }
 
-    // ✅ 추가: 최근 검색어 로드
     fun loadRecentSearches() {
-        _recentSearches.value = userPreference.getRecentSearches().sortedByDescending { it } // 최신순 정렬
+        _recentSearches.value = userPreference.getRecentSearches().sortedByDescending { it }
     }
 
-    // ✅ 추가: 최근 검색어 추가
     fun addRecentSearch(query: String) {
         if (query.isNotBlank()) {
             userPreference.addRecentSearch(query)
-            loadRecentSearches() // 갱신된 목록 다시 로드
+            loadRecentSearches()
         }
     }
 
-    // ✅ 추가: 특정 최근 검색어 삭제
     fun removeRecentSearch(query: String) {
         userPreference.removeRecentSearch(query)
-        loadRecentSearches() // 갱신된 목록 다시 로드
+        loadRecentSearches()
     }
 
-    // ✅ 추가: 모든 최근 검색어 삭제
     fun clearAllRecentSearches() {
         userPreference.clearRecentSearches()
-        loadRecentSearches() // 목록 비우기
+        loadRecentSearches()
     }
 }

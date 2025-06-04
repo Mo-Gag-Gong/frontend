@@ -107,8 +107,11 @@ fun HomeScreen(
 
             // 검색어 또는 선택된 관심사 변경 시 그룹 목록 업데이트 (백엔드 호출)
             // 홈 화면에서는 관심사 필터링만 적용되도록 수정
-            LaunchedEffect(selectedInterest) {
-                viewModel.fetchGroups()
+            LaunchedEffect(selectedInterest, region) { // region 변경 시에도 그룹 목록을 새로고침하도록 추가
+                if (region.isNotBlank()) { // 지역 정보가 로드된 후에만 그룹을 가져오도록 조건 추가
+                    Log.d("HomeScreen", "selectedInterest 또는 region 변경 감지. fetchGroups 호출. selectedInterest: $selectedInterest, region: $region")
+                    viewModel.fetchGroups(query = null, interestNameToFilter = selectedInterest)
+                }
             }
 
             // 필터링된 그룹 목록을 화면에 표시
