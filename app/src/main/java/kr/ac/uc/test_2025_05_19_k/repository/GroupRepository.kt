@@ -1,3 +1,4 @@
+// mo-gag-gong/frontend/frontend-dev-hj/app/src/main/java/kr/ac/uc/test_2025_05_19_k/repository/GroupRepository.kt
 package kr.ac.uc.test_2025_05_19_k.repository
 
 import kr.ac.uc.test_2025_05_19_k.model.StudyGroup
@@ -27,4 +28,9 @@ class GroupRepository @Inject constructor(
         groupApi.createGroup(request)
     }
 
+    // ✅ 추가: 키워드 기반 스터디 그룹 검색
+    suspend fun searchGroups(keyword: String, page: Int? = 0, size: Int? = 10): List<StudyGroup> {
+        val pageResult: PageStudyGroupDto = groupApi.searchGroups(keyword, page, size)
+        return pageResult.content
+    }
 }

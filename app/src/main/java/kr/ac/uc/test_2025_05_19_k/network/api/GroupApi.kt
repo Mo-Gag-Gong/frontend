@@ -1,3 +1,4 @@
+// mo-gag-gong/frontend/frontend-dev-hj/app/src/main/java/kr/ac/uc/test_2025_05_19_k/network/api/GroupApi.kt
 package kr.ac.uc.test_2025_05_19_k.network.api
 
 import kr.ac.uc.test_2025_05_19_k.model.PageStudyGroupDto
@@ -27,4 +28,12 @@ interface GroupApi {
 
     @POST("/api/groups")
     suspend fun createGroup(@Body request: GroupCreateRequest)
+
+    // ✅ 추가: 스터디 그룹 검색 API (제목 또는 설명에 키워드 포함)
+    @GET("/api/groups/search")
+    suspend fun searchGroups(
+        @retrofit2.http.Query("keyword") keyword: String, // 키워드 필수
+        @retrofit2.http.Query("page") page: Int? = 0,
+        @retrofit2.http.Query("size") size: Int? = 10
+    ): PageStudyGroupDto
 }

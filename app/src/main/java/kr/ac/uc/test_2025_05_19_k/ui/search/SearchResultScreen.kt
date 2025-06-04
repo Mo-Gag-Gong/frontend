@@ -1,3 +1,4 @@
+// mo-gag-gong/frontend/frontend-dev-hj/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/search/SearchResultScreen.kt
 package kr.ac.uc.test_2025_05_19_k.ui.search
 
 import androidx.compose.foundation.layout.*
@@ -16,7 +17,7 @@ import kr.ac.uc.test_2025_05_19_k.ui.common.GroupCard
 import kr.ac.uc.test_2025_05_19_k.viewmodel.HomeViewModel
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import android.util.Log // Log import
+import android.util.Log
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,13 +27,14 @@ fun SearchResultScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onGroupClick: (Long) -> Unit
 ) {
-    val region by viewModel.region.collectAsState() // 지역명
-    val groupList by viewModel.groupList.collectAsState() // 검색 결과 그룹 목록
+    val region by viewModel.region.collectAsState()
+    val groupList by viewModel.groupList.collectAsState()
 
     LaunchedEffect(searchQuery) {
         // 검색어 변경 시 그룹 목록 다시 불러오기
         Log.d("SearchResultScreen", "검색어: $searchQuery, 지역: $region. 그룹 목록 불러오기 시작.")
-        viewModel.fetchGroups(searchQuery)
+        // ✅ 변경: fetchGroups 호출 시 searchQuery를 명시적으로 전달
+        viewModel.fetchGroups(query = searchQuery)
     }
 
     Scaffold(

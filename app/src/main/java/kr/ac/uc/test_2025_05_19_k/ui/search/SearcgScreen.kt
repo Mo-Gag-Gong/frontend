@@ -1,4 +1,4 @@
-// mo-gag-gong/frontend/frontend-dev-hj/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/search/SearchScreen.kt
+// mo-gag-gong/frontend/frontend-dev-hj/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/search/SearcgScreen.kt
 package kr.ac.uc.test_2025_05_19_k.ui.search
 
 import androidx.compose.foundation.layout.*
@@ -27,21 +27,23 @@ import androidx.compose.ui.text.input.ImeAction
 @Composable
 fun SearchScreen(
     navController: NavController,
-    viewModel: HomeViewModel = hiltViewModel(), // HomeViewModel을 사용하여 지역명 가져오기
+    viewModel: HomeViewModel = hiltViewModel(),
     onSearch: (String) -> Unit
 ) {
     val region by viewModel.region.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
-    val recentSearches = remember { mutableStateListOf("영어 회화", "자격증 공부") } // 임시 최근 검색어
+    // ✅ 변경: 하드코딩된 최근 검색어 대신 ViewModel의 StateFlow 사용
+    val recentSearches by viewModel.recentSearches.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.initUser() // 지역명 로드를 위해 초기화
+        viewModel.loadRecentSearches() // ✅ 추가: 화면 진입 시 최근 검색어 로드
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("") }, // 제목은 비워두고 검색창으로 대체
+                title = { Text("") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
@@ -60,7 +62,7 @@ fun SearchScreen(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                placeholder = { Text("${region} 근처에서 검색", color = Color.Gray) }, // 지역명 표시
+                placeholder = { Text("${region} 근처에서 검색", color = Color.Gray) },
                 singleLine = true,
                 leadingIcon = {
                     Icon(Icons.Default.Search, contentDescription = "검색 아이콘")
@@ -69,6 +71,7 @@ fun SearchScreen(
                     if (searchQuery.isNotEmpty()) {
                         IconButton(onClick = {
                             if (searchQuery.isNotBlank()) {
+                                viewModel.addRecentSearch(searchQuery) // ✅ 추가: 검색 시 최근 검색어에 추가
                                 onSearch(searchQuery)
                             }
                         }) {
@@ -82,6 +85,7 @@ fun SearchScreen(
                 keyboardActions = KeyboardActions(
                     onSearch = {
                         if (searchQuery.isNotBlank()) {
+                            viewModel.addRecentSearch(searchQuery) // ✅ 추가: 검색 시 최근 검색어에 추가
                             onSearch(searchQuery)
                         }
                     }
@@ -102,25 +106,33 @@ fun SearchScreen(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-                TextButton(onClick = { recentSearches.clear() }) {
+                TextButton(onClick = { viewModel.clearAllRecentSearches() }) { // ✅ 변경: 모든 최근 검색어 삭제
                     Text("모두 지우기", color = MaterialTheme.colorScheme.primary)
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
 
-            FlowRow( // 자동 줄바꿈을 위한 FlowRow
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 recentSearches.forEach { search ->
                     AssistChip(
-                        onClick = { onSearch(search) },
+                        onClick = {
+                            searchQuery = search // 검색 창에 최근 검색어 입력
+                            onSearch(search)
+                        },
                         label = {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(search)
                                 Spacer(Modifier.width(4.dp))
-                                Icon(Icons.Default.Close, contentDescription = "삭제", modifier = Modifier.size(16.dp))
+                                IconButton(
+                                    onClick = { viewModel.removeRecentSearch(search) }, // ✅ 변경: 개별 삭제
+                                    modifier = Modifier.size(16.dp).align(Alignment.CenterVertically) // 아이콘 중앙 정렬
+                                ) {
+                                    Icon(Icons.Default.Close, contentDescription = "삭제")
+                                }
                             }
                         },
                         colors = AssistChipDefaults.assistChipColors(
@@ -132,11 +144,4 @@ fun SearchScreen(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewSearchScreen() {
-    val navController = rememberNavController()
-    SearchScreen(navController = navController, onSearch = {})
 }
