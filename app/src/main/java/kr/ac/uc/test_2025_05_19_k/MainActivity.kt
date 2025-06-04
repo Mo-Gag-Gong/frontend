@@ -5,51 +5,81 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import kr.ac.uc.test_2025_05_19_k.data.local.UserPreference //
-import kr.ac.uc.test_2025_05_19_k.navigation.AppNavGraph //
-import kr.ac.uc.test_2025_05_19_k.ui.theme.MogackoTheme //
+import kr.ac.uc.test_2025_05_19_k.data.local.UserPreference
+import kr.ac.uc.test_2025_05_19_k.navigation.AppNavGraph
+import kr.ac.uc.test_2025_05_19_k.navigation.BottomNavItem
+import kr.ac.uc.test_2025_05_19_k.navigation.BottomNavigationBar
+import kr.ac.uc.test_2025_05_19_k.navigation.bottomNavItems // bottomNavItems 임포트
+import kr.ac.uc.test_2025_05_19_k.ui.theme.MogackoTheme
 import kr.ac.uc.test_2025_05_19_k.repository.TokenManager
 import javax.inject.Inject
 
-@AndroidEntryPoint // Hilt를 사용한 의존성 주입을 위해 필요
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var userPreference: UserPreference // UserPreference 주입
+    lateinit var userPreference: UserPreference
     @Inject
-    lateinit var tokenManager: TokenManager // TokenManager 주입
+    lateinit var tokenManager: TokenManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MogackoTheme { //
+            MogackoTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // 로그인 상태 및 온보딩 완료 상태 확인
-                    val isLoggedIn = tokenManager.hasValidToken() // TokenManager로 로그인 상태 확인
-                    val isOnboardingComplete = userPreference.isOnboardingCompleted() //
+                    val navController = rememberNavController()
+                    val isLoggedIn = tokenManager.hasValidToken()
+                    val isOnboardingComplete = userPreference.isOnboardingCompleted()
 
-                    // 시작 화면 동적 결정
                     val startDestination = when {
-                        isLoggedIn && isOnboardingComplete -> "home" // 로그인 O, 온보딩 O -> 홈 화면
-                        isLoggedIn && !isOnboardingComplete -> {
-                            // 로그인 O, 온보딩 X -> 온보딩 첫 화면 또는 중간 화면
-                            // (여기서는 예시로 profile_input으로 설정, 필요시 더 세분화된 로직 추가 가능)
-                            // 예를 들어, UserPreference에 마지막 온보딩 단계를 저장하고 불러올 수 있습니다.
-                            "profile_input" //
-                        }
-                        else -> "login" // 로그인 X -> 로그인 화면
+                        isLoggedIn && isOnboardingComplete -> BottomNavItem.Home.route
+                        isLoggedIn && !isOnboardingComplete -> "profile_input" // 온보딩 라우트
+                        else -> "login" // 로그인 라우트
                     }
 
-                    AppNavGraph(startDestination = startDestination) //
+                    MainScreen(
+                        navController = navController,
+                        startDestination = startDestination
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+fun MainScreen(navController: NavHostController, startDestination: String) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    // 하단 네비게이션 바를 표시해야 하는 라우트인지 확인
+    val shouldShowBottomBar = bottomNavItems.any { it.route == currentRoute }
+
+    Scaffold(
+        bottomBar = {
+            if (shouldShowBottomBar) {
+                BottomNavigationBar(navController = navController)
+            }
+        }
+    ) { innerPadding ->
+        AppNavGraph(
+            navController = navController,
+            startDestination = startDestination,
+            modifier = Modifier.padding(innerPadding) // NavHost에 패딩 적용
+        )
     }
 }

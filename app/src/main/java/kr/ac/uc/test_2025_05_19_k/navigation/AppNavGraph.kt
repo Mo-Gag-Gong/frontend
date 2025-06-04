@@ -1,180 +1,170 @@
+// app/src/main/java/kr/ac/uc/test_2025_05_19_k/navigation/AppNavGraph.kt
 package kr.ac.uc.test_2025_05_19_k.navigation
 
+import android.util.Log // Log 임포트 추가
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
+import androidx.compose.runtime.LaunchedEffect // LaunchedEffect 임포트 추가
+import androidx.compose.runtime.getValue // getValue 임포트 추가
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavController // NavController 임포트 (NavHostController의 상위 인터페이스)
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState // currentBackStackEntryAsState 임포트 추가
+// ... 기존 import ...
+import kr.ac.uc.test_2025_05_19_k.ui.home.HomeScreen
+import kr.ac.uc.test_2025_05_19_k.ui.schedule.ScheduleScreen
+import kr.ac.uc.test_2025_05_19_k.ui.group.GroupManagementScreen
+import kr.ac.uc.test_2025_05_19_k.ui.profile.MyProfileScreen
+// ... 나머지 화면 import ...
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import kr.ac.uc.test_2025_05_19_k.ui.*
+import kr.ac.uc.test_2025_05_19_k.ui.profile.SignInScreen
+import kr.ac.uc.test_2025_05_19_k.ui.profile.SignInProfileSettingScreen
+import kr.ac.uc.test_2025_05_19_k.ui.profile.InterestSelectScreenHost
+import kr.ac.uc.test_2025_05_19_k.ui.gps.SignInGPSSettingScreen
 import kr.ac.uc.test_2025_05_19_k.ui.gps.RegionSettingScreen
 import kr.ac.uc.test_2025_05_19_k.ui.group.create.GroupCreateScreen
 import kr.ac.uc.test_2025_05_19_k.ui.group.detail.GroupDetailScreen
-import kr.ac.uc.test_2025_05_19_k.ui.home.HomeScreen
-import kr.ac.uc.test_2025_05_19_k.ui.profile.SignInProfileSettingScreen
-import kr.ac.uc.test_2025_05_19_k.ui.gps.SignInGPSSettingScreen
-import kr.ac.uc.test_2025_05_19_k.ui.profile.InterestSelectScreenHost
-import kr.ac.uc.test_2025_05_19_k.ui.profile.SignInScreen
-import androidx.compose.runtime.remember // remember 추가
-import androidx.compose.ui.platform.LocalContext // LocalContext 추가
-import kr.ac.uc.test_2025_05_19_k.data.local.UserPreference // UserPreference import 추가
-import kr.ac.uc.test_2025_05_19_k.ui.profile.SignInScreen //
-
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.navigation.compose.currentBackStackEntryAsState
-import android.util.Log
-import kotlinx.coroutines.delay
-import kr.ac.uc.test_2025_05_19_k.ui.search.SearchScreen // SearchScreen import
-import kr.ac.uc.test_2025_05_19_k.ui.search.SearchResultScreen // SearchResultScreen import
+import kr.ac.uc.test_2025_05_19_k.ui.search.SearchScreen
+import kr.ac.uc.test_2025_05_19_k.ui.search.SearchResultScreen
+import kotlinx.coroutines.delay // delay 임포트 추가
 
 
+// 현재 화면 로깅을 위한 Composable 함수
 @Composable
-fun LogCurrentScreen(navController: NavController) {
+fun LogCurrentScreen(navController: NavController) { // NavController 타입 사용 가능
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
-    // 10초마다 현재 route를 로그로 출력
+    // LaunchedEffect를 사용하여 현재 route를 주기적으로 로그로 출력 (디버깅용)
+    // 실제 프로덕션 코드에서는 제거하거나 필요에 따라 조건부로 실행하는 것이 좋습니다.
     LaunchedEffect(Unit) {
         while (true) {
             val currentRoute = navBackStackEntry?.destination?.route
             Log.d("CurrentScreenLogger", "현재 화면(route): $currentRoute")
-            delay(10_00L)
+            delay(10000L) // 10초 간격 (기존 1000L에서 변경)
         }
     }
 }
 
-
-
 @Composable
 fun AppNavGraph(
-    navController: NavHostController = rememberNavController(),
-    startDestination: String = "login" //
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    startDestination: String
 ) {
 
-    LogCurrentScreen(navController) //
+    LogCurrentScreen(navController) // 여기에서 LogCurrentScreen 함수 호출
 
-    NavHost(navController = navController, startDestination = startDestination) {
-        // 1. 로그인
+    NavHost(
+        navController = navController,
+        startDestination = startDestination,
+        modifier = modifier
+    ) {
+        // --- 기존 온보딩/로그인 라우트 ---
         composable("login") {
-            SignInScreen( //
+            SignInScreen(
                 onNavigateNext = {
-                    navController.navigate("profile_input") { //
-                        popUpTo("login") { inclusive = true } //
+                    navController.navigate("profile_input") {
+                        popUpTo("login") { inclusive = true }
                     }
                 }
             )
         }
-        // 2. 프로필 입력
-        composable("profile_input") { //
-            SignInProfileSettingScreen( //
+        composable("profile_input") {
+            SignInProfileSettingScreen(
                 navController = navController,
                 onNext = { name, gender, phone, birth ->
-                    navController.navigate("interest_select/$name/$gender/$phone/$birth") //
+                    // gender, phone, birth 인자도 함께 전달하도록 수정
+                    navController.navigate("interest_select/$name/$gender/$phone/$birth")
                 }
             )
         }
-        // 3. 관심사 선택
-        composable( //
-            "interest_select/{name}/{gender}/{phone}/{birth}",
+        composable(
+            "interest_select/{name}/{gender}/{phone}/{birth}", // gender, phone, birth 인자 추가
             arguments = listOf(
                 navArgument("name") { type = NavType.StringType },
-                navArgument("gender") { type = NavType.StringType },
-                navArgument("phone") { type = NavType.StringType },
-                navArgument("birth") { type = NavType.StringType }
+                navArgument("gender") { type = NavType.StringType }, // gender 인자 정의
+                navArgument("phone") { type = NavType.StringType },  // phone 인자 정의
+                navArgument("birth") { type = NavType.StringType }   // birth 인자 정의
             )
         ) { backStackEntry ->
             val name = backStackEntry.arguments?.getString("name") ?: ""
-            val gender = backStackEntry.arguments?.getString("gender") ?: ""
-            val phone = backStackEntry.arguments?.getString("phone") ?: ""
-            val birth = backStackEntry.arguments?.getString("birth") ?: ""
-            InterestSelectScreenHost( //
+            // gender, phone, birth 값도 필요시 여기서 가져와서 InterestSelectScreenHost로 전달 가능
+            // val gender = backStackEntry.arguments?.getString("gender") ?: ""
+            // val phone = backStackEntry.arguments?.getString("phone") ?: ""
+            // val birth = backStackEntry.arguments?.getString("birth") ?: ""
+            InterestSelectScreenHost(
                 userName = name,
                 navController = navController,
                 onNext = {
-                    navController.navigate("gps_setting") { //
-                        popUpTo("interest_select/{name}/{gender}/{phone}/{birth}") { inclusive = true } // 수정: popUpTo 경로 명시적 지정
+                    navController.navigate("gps_setting") {
+                        // popUpTo 경로 수정: 모든 파라미터를 포함한 정확한 경로 또는 ID 사용
+                        popUpTo("interest_select/${name}/${backStackEntry.arguments?.getString("gender") ?: ""}/${backStackEntry.arguments?.getString("phone") ?: ""}/${backStackEntry.arguments?.getString("birth") ?: ""}") {
+                            inclusive = true
+                        }
                     }
                 }
             )
         }
-        // 4. 위치 권한 요청
-        composable("gps_setting") { //
-            val context = LocalContext.current
-            // UserPreference는 @Singleton으로 Hilt에 의해 관리되지만,
-            // NavGraph Composable에서 직접 주입받는 것은 일반적이지 않습니다.
-            // 이 코드는 임시 방편이며, 원래는 ViewModel을 통해 UserPreference에 접근해야 합니다.
-            val userPreference = remember { UserPreference(context) } //
-
-            SignInGPSSettingScreen( //
+        composable("gps_setting") {
+            SignInGPSSettingScreen(
                 onBack = { navController.popBackStack() },
                 onLocationGranted = {
-                    // --- 임시 수정 로직 시작 ---
-                    userPreference.saveLocation("울산") // 지역 정보 "울산"으로 강제 저장
-                    userPreference.setOnboardingCompleted(true) // 온보딩 완료 처리
-
-                    navController.navigate("home") { // 홈 화면으로 이동
-                        popUpTo("gps_setting") { inclusive = true } // 현재 화면(gps_setting)은 스택에서 제거
-                        // 필요시 이전 온보딩 스택 전체를 날리려면 popUpTo("login") 또는 popUpTo(navController.graph.findStartDestination().id) 등을 고려할 수 있습니다.
-                        // 현재는 gps_setting 이전의 profile_input은 스택에 남아있게 됩니다.
+                    navController.navigate(BottomNavItem.Home.route) {
+                        popUpTo("gps_setting") { inclusive = true }
                     }
-                    // --- 임시 수정 로직 끝 ---
-
-                    // // 원래 로직 주석 처리
-                    // navController.navigate("region_setting") {
-                    //     popUpTo("gps_setting") { inclusive = true }
-                    // }
                 }
             )
         }
-        // 5. 지역 선택/확인 (현재는 이 화면으로 가지 않음)
-        composable("region_setting") { //
-            RegionSettingScreen( //
+        composable("region_setting") {
+            RegionSettingScreen(
                 navController = navController,
                 onBack = { navController.popBackStack() },
-                onDone = { region ->
-                    // 이 부분은 userPreference를 통해 이미 저장되었으므로,
-                    // 홈으로만 이동하도록 단순화하거나, 또는 현재 로직을 유지해도 됩니다.
-                    // 여기서는 UserPreference 저장 로직이 이미 onLocationGranted에서 수행되었으므로,
-                    // onDone 콜백은 중복 작업을 피하기 위해 홈으로만 이동하게 둘 수 있습니다.
-                    navController.navigate("home") { //
-                        popUpTo("region_setting") { inclusive = true } //
+                onDone = {
+                    navController.navigate(BottomNavItem.Home.route) {
+                        popUpTo("region_setting") { inclusive = true }
                     }
                 }
             )
         }
 
-        // ==== 그룹/홈 화면 영역 ====
-        // 7. 홈 화면
-        composable("home") { //
-            HomeScreen( //
-                navController = navController, // NavController 전달
+        // --- 하단 네비게이션 바 대상 화면 ---
+        composable(BottomNavItem.Home.route) {
+            HomeScreen(
+                navController = navController,
                 onGroupClick = { groupId ->
-                    navController.navigate("group_detail/$groupId") //
+                    navController.navigate("group_detail/$groupId")
                 },
                 onCreateGroupClick = {
-                    navController.navigate("group_create") //
+                    navController.navigate("group_create")
                 },
                 onNavigateToSearch = {
-                    navController.navigate("search") // 검색 화면으로 이동
+                    navController.navigate("search")
                 }
             )
         }
-        // 8. 그룹 상세
-        composable( //
+        composable(BottomNavItem.Schedule.route) {
+            ScheduleScreen(navController = navController)
+        }
+        composable(BottomNavItem.GroupManagement.route) {
+            GroupManagementScreen(navController = navController)
+        }
+        composable(BottomNavItem.MyProfile.route) {
+            MyProfileScreen(navController = navController)
+        }
+
+        // --- 기타 화면 라우트 ---
+        composable(
             "group_detail/{groupId}",
             arguments = listOf(navArgument("groupId") { type = NavType.LongType })
         ) { backStackEntry ->
             val groupId = backStackEntry.arguments?.getLong("groupId") ?: return@composable
-            GroupDetailScreen(groupId = groupId, onBack = { navController.popBackStack() }) //
+            GroupDetailScreen(groupId = groupId, onBack = { navController.popBackStack() })
         }
-        // 9. 그룹 생성
-        composable("group_create") { //
-            GroupCreateScreen(navController = navController) //
+        composable("group_create") {
+            GroupCreateScreen(navController = navController)
         }
-
-        // 10. 검색 화면
         composable("search") {
             SearchScreen(
                 navController = navController,
@@ -183,8 +173,6 @@ fun AppNavGraph(
                 }
             )
         }
-
-        // 11. 검색 결과 화면
         composable(
             "search_result/{query}",
             arguments = listOf(navArgument("query") { type = NavType.StringType })
