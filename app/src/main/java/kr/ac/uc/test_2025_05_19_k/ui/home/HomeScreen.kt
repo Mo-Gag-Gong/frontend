@@ -1,3 +1,4 @@
+// mo-gag-gong/frontend/frontend-dev-hj/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/home/HomeScreen.kt
 package kr.ac.uc.test_2025_05_19_k.ui.home
 
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,9 @@ import kr.ac.uc.test_2025_05_19_k.viewmodel.HomeViewModel
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.horizontalScroll
 import android.util.Log
+import androidx.compose.foundation.lazy.LazyColumn // LazyColumn 임포트
+import androidx.compose.foundation.lazy.items // items 임포트
+import androidx.compose.foundation.lazy.rememberLazyListState // rememberLazyListState 임포트
 import androidx.compose.material.icons.filled.Search
 import androidx.navigation.NavController
 import androidx.compose.ui.Alignment
@@ -23,25 +27,41 @@ import androidx.compose.ui.Alignment
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    navController: NavController, // NavController 추가
+    navController: NavController,
     onGroupClick: (Long) -> Unit,
     onCreateGroupClick: () -> Unit,
-    onNavigateToSearch: () -> Unit // 검색 화면으로 이동하는 콜백 추가
+    onNavigateToSearch: () -> Unit
 ) {
     val region by viewModel.region.collectAsState()
     val interests by viewModel.interests.collectAsState()
     val selectedInterest by viewModel.selectedInterest.collectAsState()
     val groupList by viewModel.groupList.collectAsState()
 
-    // 초기 사용자 데이터 및 관심사 로드
-    LaunchedEffect(Unit) {
-        viewModel.initUser()
-    }
+    // --- 페이지네이션 관련 상태 ---
+    val isLoadingInitial by viewModel.isLoadingInitial.collectAsState()
+    val isLoadingNextPage by viewModel.isLoadingNextPage.collectAsState()
+    val isLastPage by viewModel.isLastPage.collectAsState()
+    val lazyListState = rememberLazyListState()
 
-    // interests 상태가 변경될 때마다 로그 출력
-    LaunchedEffect(interests) {
-        Log.d("HomeScreen", "관심사 상태 업데이트 감지: ${interests.size}개, 데이터: $interests")
+    // 스크롤 리스너: 리스트의 끝에 도달하면 다음 페이지 로드
+    LaunchedEffect(lazyListState, isLoadingNextPage, isLastPage, groupList) {
+        snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+            .collect { lastVisibleItemIndex ->
+                val totalItemsCount = lazyListState.layoutInfo.totalItemsCount
+                // groupList가 비어있지 않고, 마지막에서 1~2개 아이템이 보일 때 미리 로드, 로딩 중이 아니고, 마지막 페이지가 아닐 때
+                if (groupList.isNotEmpty() && lastVisibleItemIndex != null &&
+                    lastVisibleItemIndex >= totalItemsCount - 3 && // 마지막에서 3번째 아이템 보이면 미리 로드
+                    !isLoadingInitial && !isLoadingNextPage && !isLastPage
+                ) {
+                    Log.d("HomeScreen", "스크롤 끝 감지, 다음 페이지 로드 요청. LastVisible: $lastVisibleItemIndex, TotalItems: $totalItemsCount")
+                    viewModel.loadNextGroupPage()
+                }
+            }
     }
+    // ViewModel 초기화는 ViewModel의 init 블록에서 처리되므로 별도 호출 불필요
+    // LaunchedEffect(Unit) {
+    //     viewModel.initUser() -> ViewModel의 init에서 호출
+    // }
 
     Scaffold(
         floatingActionButton = {
@@ -54,7 +74,7 @@ fun HomeScreen(
         },
         topBar = {
             TopAppBar(
-                title = { Text(text = "${region} 지역 스터디 추천") },
+                title = { Text(text = if (region.isNotBlank()) "${region} 지역 스터디 추천" else "스터디 추천") },
                 actions = {
                     IconButton(onClick = onNavigateToSearch) {
                         Icon(Icons.Default.Search, contentDescription = "검색")
@@ -66,23 +86,15 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(horizontal = 16.dp, vertical = 0.dp) // 상단 패딩 제거
+                .padding(horizontal = 16.dp, vertical = 0.dp)
                 .fillMaxSize()
         ) {
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 검색 바 대신 이제 검색 아이콘으로 이동합니다.
-            // OutlinedTextField(
-            //     value = searchQuery,
-            //     onValueChange = { viewModel.onSearchQueryChange(it) },
-            //     label = { Text("스터디 검색") },
-            //     modifier = Modifier.fillMaxWidth()
-            // )
-            // Spacer(modifier = Modifier.height(12.dp))
-
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
             ) {
                 if (interests.isNotEmpty()) {
                     interests.forEach { interest ->
@@ -90,39 +102,48 @@ fun HomeScreen(
                             name = interest.name,
                             isSelected = selectedInterest == interest.name,
                             onClick = {
-                                if (selectedInterest == interest.name) {
-                                    viewModel.onInterestClick(null)
-                                } else {
-                                    viewModel.onInterestClick(interest.name)
-                                }
+                                viewModel.onInterestClick(if (selectedInterest == interest.name) null else interest.name)
                             }
                         )
                     }
-                } else {
-                    Text("관심사 로딩 중이거나 없음...", color = MaterialTheme.colorScheme.error)
+                } else if (!isLoadingInitial) { // 로딩 중이 아닐 때만 "관심사 없음" 표시
+                    Text("관심사 로딩 중이거나 없음...", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 검색어 또는 선택된 관심사 변경 시 그룹 목록 업데이트 (백엔드 호출)
-            // 홈 화면에서는 관심사 필터링만 적용되도록 수정
-            LaunchedEffect(selectedInterest, region) { // region 변경 시에도 그룹 목록을 새로고침하도록 추가
-                if (region.isNotBlank()) { // 지역 정보가 로드된 후에만 그룹을 가져오도록 조건 추가
-                    Log.d("HomeScreen", "selectedInterest 또는 region 변경 감지. fetchGroups 호출. selectedInterest: $selectedInterest, region: $region")
-                    viewModel.fetchGroups(query = null, interestNameToFilter = selectedInterest)
-                }
-            }
-
-            // 필터링된 그룹 목록을 화면에 표시
-            if (groupList.isEmpty()) {
+            if (isLoadingInitial) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("해당 조건의 스터디 그룹이 없습니다.")
+                    CircularProgressIndicator()
+                }
+            } else if (groupList.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("표시할 스터디 그룹이 없습니다.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                 }
             } else {
-                groupList.forEach { group -> // 필터링은 ViewModel에서 처리하도록 변경되었으므로, 여기서는 바로 groupList를 사용
-                    GroupCard(group = group) {
-                        onGroupClick(group.groupId)
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp) // 카드 간 간격
+                ) {
+                    items(items = groupList, key = { group -> group.groupId }) { group ->
+                        GroupCard(group = group) {
+                            onGroupClick(group.groupId)
+                        }
+                    }
+                    // 다음 페이지 로딩 인디케이터
+                    if (isLoadingNextPage) {
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 16.dp),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
                     }
                 }
             }

@@ -3,6 +3,7 @@ package kr.ac.uc.test_2025_05_19_k.ui.search
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items // 이 import가 정확한지 확인해주세요.
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -18,6 +19,7 @@ import kr.ac.uc.test_2025_05_19_k.viewmodel.HomeViewModel
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import android.util.Log
+import kr.ac.uc.test_2025_05_19_k.model.StudyGroup // StudyGroup 모델 임포트 확인
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,14 +29,12 @@ fun SearchResultScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onGroupClick: (Long) -> Unit
 ) {
-    val region by viewModel.region.collectAsState()
     val groupList by viewModel.groupList.collectAsState()
+    val isLoading by viewModel.isLoadingInitial.collectAsState()
 
     LaunchedEffect(searchQuery) {
-        // 검색어 변경 시 그룹 목록 다시 불러오기
-        Log.d("SearchResultScreen", "검색어: $searchQuery, 지역: $region. 그룹 목록 불러오기 시작.")
-        // ✅ 변경: fetchGroups 호출 시 searchQuery를 명시적으로 전달
-        viewModel.fetchGroups(query = searchQuery)
+        Log.d("SearchResultScreen", "검색어: $searchQuery. 그룹 목록 불러오기 시작.")
+        viewModel.fetchSearchResults(searchQuery)
     }
 
     Scaffold(
@@ -69,7 +69,11 @@ fun SearchResultScreen(
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 
-            if (groupList.isEmpty()) {
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            } else if (groupList.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("검색 결과가 없습니다.", style = MaterialTheme.typography.bodyLarge)
                 }
@@ -78,8 +82,13 @@ fun SearchResultScreen(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(groupList.size) { index ->
-                        val group = groupList[index]
+                    // items(items = groupList, key = { group -> group.groupId }) // 이전 방식
+                    // 아래와 같이 groupList를 첫 번째 인자로 직접 전달합니다.
+                    items(
+                        items = groupList, // items 파라미터 이름을 명시하는 것이 혼동을 줄 수 있다면, 아래처럼 직접 전달합니다.
+                        // items(groupList, // 이렇게만 사용해도 됩니다.
+                        key = { group -> group.groupId }
+                    ) { group ->
                         GroupCard(group = group) {
                             onGroupClick(group.groupId)
                         }

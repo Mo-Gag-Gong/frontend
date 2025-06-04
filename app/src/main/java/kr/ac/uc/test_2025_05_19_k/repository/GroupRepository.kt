@@ -1,19 +1,19 @@
 // mo-gag-gong/frontend/frontend-dev-hj/app/src/main/java/kr/ac/uc/test_2025_05_19_k/repository/GroupRepository.kt
 package kr.ac.uc.test_2025_05_19_k.repository
 
-import kr.ac.uc.test_2025_05_19_k.model.StudyGroup
+import kr.ac.uc.test_2025_05_19_k.model.StudyGroup // StudyGroup은 이미 임포트 되어 있을 것입니다.
 import kr.ac.uc.test_2025_05_19_k.model.StudyGroupDetail
 import kr.ac.uc.test_2025_05_19_k.network.api.GroupApi
 import kr.ac.uc.test_2025_05_19_k.model.request.GroupCreateRequest
-import kr.ac.uc.test_2025_05_19_k.model.PageStudyGroupDto
+import kr.ac.uc.test_2025_05_19_k.model.PageStudyGroupDto // PageStudyGroupDto 임포트
 import javax.inject.Inject
 
 class GroupRepository @Inject constructor(
     private val groupApi: GroupApi
 ) {
-    suspend fun getGroups(region: String, keyword: String?, interest: String?, page: Int? = 0, size: Int? = 10): List<StudyGroup> {
-        val pageResult: PageStudyGroupDto = groupApi.getGroups(region, keyword, interest, page, size)
-        return pageResult.content // 반환 타입: List<StudyGroup>
+    // 반환 타입을 PageStudyGroupDto로 변경하고, page와 size는 필수 인자로 받도록 함
+    suspend fun getGroups(region: String, keyword: String?, interest: String?, page: Int, size: Int): PageStudyGroupDto {
+        return groupApi.getGroups(region, keyword, interest, page, size)
     }
 
     suspend fun getGroupDetail(groupId: Long): StudyGroupDetail {
@@ -28,7 +28,7 @@ class GroupRepository @Inject constructor(
         groupApi.createGroup(request)
     }
 
-    // ✅ 추가: 키워드 기반 스터디 그룹 검색
+    // 검색 API는 페이지네이션을 지원하지 않으므로, 반환 타입은 List<StudyGroup> 유지
     suspend fun searchGroups(keyword: String, page: Int? = 0, size: Int? = 10): List<StudyGroup> {
         val pageResult: PageStudyGroupDto = groupApi.searchGroups(keyword, page, size)
         return pageResult.content
