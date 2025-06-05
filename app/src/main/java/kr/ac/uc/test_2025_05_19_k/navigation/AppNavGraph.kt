@@ -2,6 +2,7 @@
 package kr.ac.uc.test_2025_05_19_k.navigation
 
 import android.util.Log // Log 임포트 추가
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect // LaunchedEffect 임포트 추가
 import androidx.compose.runtime.getValue // getValue 임포트 추가
@@ -10,13 +11,12 @@ import androidx.navigation.NavController // NavController 임포트 (NavHostCont
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState // currentBackStackEntryAsState 임포트 추가
-// ... 기존 import ...
+import androidx.navigation.compose.currentBackStackEntryAsState
+import kr.ac.uc.test_2025_05_19_k.ui.group.GroupEditScreen
 import kr.ac.uc.test_2025_05_19_k.ui.home.HomeScreen
 import kr.ac.uc.test_2025_05_19_k.ui.schedule.ScheduleScreen
 import kr.ac.uc.test_2025_05_19_k.ui.group.GroupManagementScreen
 import kr.ac.uc.test_2025_05_19_k.ui.profile.MyProfileScreen
-// ... 나머지 화면 import ...
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import kr.ac.uc.test_2025_05_19_k.ui.profile.SignInScreen
@@ -185,6 +185,18 @@ fun AppNavGraph(
                     navController.navigate("group_detail/$groupId")
                 }
             )
+        }
+        composable(
+            route = "group_edit/{groupId}",
+            arguments = listOf(navArgument("groupId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getLong("groupId") ?: -1L // 유효하지 않은 ID 처리 고려
+            if (groupId != -1L) {
+                GroupEditScreen(navController = navController, groupId = groupId)
+            } else {
+                // 오류 처리 또는 이전 화면으로 복귀 로직
+                Text("오류: 유효하지 않은 그룹 ID 입니다.")
+            }
         }
     }
 }

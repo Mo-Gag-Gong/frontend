@@ -6,6 +6,7 @@ import kr.ac.uc.test_2025_05_19_k.model.StudyGroupDetail
 import kr.ac.uc.test_2025_05_19_k.network.api.GroupApi
 import kr.ac.uc.test_2025_05_19_k.model.request.GroupCreateRequest
 import kr.ac.uc.test_2025_05_19_k.model.PageStudyGroupDto // PageStudyGroupDto 임포트
+import retrofit2.Response
 import javax.inject.Inject
 
 class GroupRepository @Inject constructor(
@@ -43,5 +44,9 @@ class GroupRepository @Inject constructor(
      */
     suspend fun getMyOwnedGroups(): List<StudyGroup> {
         return groupApi.getMyOwnedGroups()
+    }
+
+    suspend fun updateGroup(groupId: Long, request: GroupCreateRequest): Response<StudyGroupDetail> {
+        return groupApi.updateGroup(groupId, request)
     }
 }
