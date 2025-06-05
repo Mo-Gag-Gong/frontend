@@ -1,18 +1,17 @@
 // app/src/main/java/kr/ac/uc/test_2025_05_19_k/navigation/AppNavGraph.kt
 package kr.ac.uc.test_2025_05_19_k.navigation
 
-import android.util.Log // Log 임포트 추가
-import androidx.compose.material3.Text
+import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect // LaunchedEffect 임포트 추가
-import androidx.compose.runtime.getValue // getValue 임포트 추가
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.material3.Text // Text 임포트 추가 (오류 처리용)
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController // NavController 임포트 (NavHostController의 상위 인터페이스)
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import kr.ac.uc.test_2025_05_19_k.ui.group.GroupEditScreen
 import kr.ac.uc.test_2025_05_19_k.ui.home.HomeScreen
 import kr.ac.uc.test_2025_05_19_k.ui.schedule.ScheduleScreen
 import kr.ac.uc.test_2025_05_19_k.ui.group.GroupManagementScreen
@@ -25,24 +24,22 @@ import kr.ac.uc.test_2025_05_19_k.ui.profile.InterestSelectScreenHost
 import kr.ac.uc.test_2025_05_19_k.ui.gps.SignInGPSSettingScreen
 import kr.ac.uc.test_2025_05_19_k.ui.gps.RegionSettingScreen
 import kr.ac.uc.test_2025_05_19_k.ui.group.create.GroupCreateScreen
-import kr.ac.uc.test_2025_05_19_k.ui.group.detail.GroupDetailScreen
+import kr.ac.uc.test_2025_05_19_k.ui.group.detail.GroupDetailScreen // GroupDetailScreen 임포트 확인
 import kr.ac.uc.test_2025_05_19_k.ui.search.SearchScreen
 import kr.ac.uc.test_2025_05_19_k.ui.search.SearchResultScreen
-import kotlinx.coroutines.delay // delay 임포트 추가
+import kotlinx.coroutines.delay
+import kr.ac.uc.test_2025_05_19_k.ui.group.GroupEditScreen
 
 
-// 현재 화면 로깅을 위한 Composable 함수
+// 현재 화면 로깅을 위한 Composable 함수 (이전과 동일)
 @Composable
-fun LogCurrentScreen(navController: NavController) { // NavController 타입 사용 가능
+fun LogCurrentScreen(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-
-    // LaunchedEffect를 사용하여 현재 route를 주기적으로 로그로 출력 (디버깅용)
-    // 실제 프로덕션 코드에서는 제거하거나 필요에 따라 조건부로 실행하는 것이 좋습니다.
     LaunchedEffect(Unit) {
         while (true) {
             val currentRoute = navBackStackEntry?.destination?.route
             Log.d("CurrentScreenLogger", "현재 화면(route): $currentRoute")
-            delay(10000L) // 10초 간격 (기존 1000L에서 변경)
+            delay(10000L)
         }
     }
 }
@@ -54,14 +51,14 @@ fun AppNavGraph(
     startDestination: String
 ) {
 
-    LogCurrentScreen(navController) // 여기에서 LogCurrentScreen 함수 호출
+    LogCurrentScreen(navController)
 
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier
     ) {
-        // --- 기존 온보딩/로그인 라우트 ---
+        // ... (login, profile_input, interest_select, gps_setting, region_setting 라우트 동일) ...
         composable("login") {
             SignInScreen(
                 onNavigateNext = {
@@ -75,32 +72,29 @@ fun AppNavGraph(
             SignInProfileSettingScreen(
                 navController = navController,
                 onNext = { name, gender, phone, birth ->
-                    // gender, phone, birth 인자도 함께 전달하도록 수정
                     navController.navigate("interest_select/$name/$gender/$phone/$birth")
                 }
             )
         }
         composable(
-            "interest_select/{name}/{gender}/{phone}/{birth}", // gender, phone, birth 인자 추가
+            "interest_select/{name}/{gender}/{phone}/{birth}",
             arguments = listOf(
                 navArgument("name") { type = NavType.StringType },
-                navArgument("gender") { type = NavType.StringType }, // gender 인자 정의
-                navArgument("phone") { type = NavType.StringType },  // phone 인자 정의
-                navArgument("birth") { type = NavType.StringType }   // birth 인자 정의
+                navArgument("gender") { type = NavType.StringType },
+                navArgument("phone") { type = NavType.StringType },
+                navArgument("birth") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             val name = backStackEntry.arguments?.getString("name") ?: ""
-            // gender, phone, birth 값도 필요시 여기서 가져와서 InterestSelectScreenHost로 전달 가능
-            // val gender = backStackEntry.arguments?.getString("gender") ?: ""
-            // val phone = backStackEntry.arguments?.getString("phone") ?: ""
-            // val birth = backStackEntry.arguments?.getString("birth") ?: ""
+            val gender = backStackEntry.arguments?.getString("gender") ?: ""
+            val phone = backStackEntry.arguments?.getString("phone") ?: ""
+            val birth = backStackEntry.arguments?.getString("birth") ?: ""
             InterestSelectScreenHost(
                 userName = name,
                 navController = navController,
                 onNext = {
                     navController.navigate("gps_setting") {
-                        // popUpTo 경로 수정: 모든 파라미터를 포함한 정확한 경로 또는 ID 사용
-                        popUpTo("interest_select/${name}/${backStackEntry.arguments?.getString("gender") ?: ""}/${backStackEntry.arguments?.getString("phone") ?: ""}/${backStackEntry.arguments?.getString("birth") ?: ""}") {
+                        popUpTo("interest_select/$name/$gender/$phone/$birth") {
                             inclusive = true
                         }
                     }
@@ -155,12 +149,22 @@ fun AppNavGraph(
         }
 
         // --- 기타 화면 라우트 ---
-        composable(
-            "group_detail/{groupId}",
+        composable( // 여기가 대략 163번째 줄 근처일 것으로 예상됩니다.
+            route = "group_detail/{groupId}",
             arguments = listOf(navArgument("groupId") { type = NavType.LongType })
         ) { backStackEntry ->
-            val groupId = backStackEntry.arguments?.getLong("groupId") ?: return@composable
-            GroupDetailScreen(groupId = groupId, onBack = { navController.popBackStack() })
+            // NavController를 올바르게 전달하고 onBack 파라미터 제거
+            val groupIdArg = backStackEntry.arguments?.getLong("groupId") ?: -1L
+            if (groupIdArg != -1L) {
+                GroupDetailScreen(
+                    navController = navController, // navController 전달
+                    groupId = groupIdArg
+                )
+            } else {
+                // 유효하지 않은 groupId 처리 (예: 오류 메시지 표시 또는 이전 화면으로 이동)
+                Text("오류: 유효하지 않은 그룹 ID입니다.")
+                // navController.popBackStack() // 또는 이전 화면으로 돌려보낼 수 있음
+            }
         }
         composable("group_create") {
             GroupCreateScreen(navController = navController)
@@ -186,15 +190,15 @@ fun AppNavGraph(
                 }
             )
         }
+        // 그룹 편집 화면 라우트 (이전에 추가한 내용)
         composable(
             route = "group_edit/{groupId}",
             arguments = listOf(navArgument("groupId") { type = NavType.LongType })
         ) { backStackEntry ->
-            val groupId = backStackEntry.arguments?.getLong("groupId") ?: -1L // 유효하지 않은 ID 처리 고려
+            val groupId = backStackEntry.arguments?.getLong("groupId") ?: -1L
             if (groupId != -1L) {
                 GroupEditScreen(navController = navController, groupId = groupId)
             } else {
-                // 오류 처리 또는 이전 화면으로 복귀 로직
                 Text("오류: 유효하지 않은 그룹 ID 입니다.")
             }
         }

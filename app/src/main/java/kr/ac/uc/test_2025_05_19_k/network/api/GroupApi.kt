@@ -1,6 +1,7 @@
 // mo-gag-gong/frontend/frontend-dev-hj/app/src/main/java/kr/ac/uc/test_2025_05_19_k/network/api/GroupApi.kt
 package kr.ac.uc.test_2025_05_19_k.network.api
 
+import kr.ac.uc.test_2025_05_19_k.model.PageGroupNoticeDto
 import kr.ac.uc.test_2025_05_19_k.model.PageStudyGroupDto
 import kr.ac.uc.test_2025_05_19_k.model.StudyGroup
 import kr.ac.uc.test_2025_05_19_k.model.StudyGroupDetail
@@ -11,6 +12,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Body
 import retrofit2.http.PUT
+import retrofit2.http.Query
 
 interface GroupApi {
     @GET("/api/groups")
@@ -48,4 +50,11 @@ interface GroupApi {
         @Path("groupId") groupId: Long,
         @Body request: GroupCreateRequest // 요청 본문은 GroupCreateRequest DTO 사용
     ): Response<StudyGroupDetail>
+
+    @GET("/api/groups/{groupId}/notices")
+    suspend fun getGroupNotices(
+        @Path("groupId") groupId: Long,
+        @Query("page") page: Int? = 0,
+        @Query("size") size: Int? = 10 // 페이지네이션 지원
+    ): PageGroupNoticeDto
 }

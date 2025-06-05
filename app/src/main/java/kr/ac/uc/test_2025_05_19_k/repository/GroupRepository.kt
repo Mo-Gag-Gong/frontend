@@ -1,6 +1,7 @@
 // mo-gag-gong/frontend/frontend-dev-hj/app/src/main/java/kr/ac/uc/test_2025_05_19_k/repository/GroupRepository.kt
 package kr.ac.uc.test_2025_05_19_k.repository
 
+import kr.ac.uc.test_2025_05_19_k.model.PageGroupNoticeDto
 import kr.ac.uc.test_2025_05_19_k.model.StudyGroup // StudyGroup은 이미 임포트 되어 있을 것입니다.
 import kr.ac.uc.test_2025_05_19_k.model.StudyGroupDetail
 import kr.ac.uc.test_2025_05_19_k.network.api.GroupApi
@@ -48,5 +49,8 @@ class GroupRepository @Inject constructor(
 
     suspend fun updateGroup(groupId: Long, request: GroupCreateRequest): Response<StudyGroupDetail> {
         return groupApi.updateGroup(groupId, request)
+    }
+    suspend fun getGroupNotices(groupId: Long, page: Int, size: Int): PageGroupNoticeDto {
+        return groupApi.getGroupNotices(groupId, page, size)
     }
 }
