@@ -36,4 +36,9 @@ interface GroupApi {
         @retrofit2.http.Query("page") page: Int? = 0,
         @retrofit2.http.Query("size") size: Int? = 10
     ): PageStudyGroupDto
+    @GET("/api/groups/my-joined-groups")
+    suspend fun getMyJoinedGroups(): List<StudyGroup> // API 응답이 List<StudyGroupDto> 형태일 것으로 예상
+
+    @GET("/api/groups/my-owned-groups")
+    suspend fun getMyOwnedGroups(): List<StudyGroup> // API 응답이 List<StudyGroupDto> 형태일 것으로 예상
 }

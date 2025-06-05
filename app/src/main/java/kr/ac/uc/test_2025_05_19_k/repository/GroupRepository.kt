@@ -33,4 +33,15 @@ class GroupRepository @Inject constructor(
         val pageResult: PageStudyGroupDto = groupApi.searchGroups(keyword, page, size)
         return pageResult.content
     }
+
+    suspend fun getMyJoinedGroups(): List<StudyGroup> {
+        return groupApi.getMyJoinedGroups()
+    }
+
+    /**
+     * 현재 사용자가 생성한 스터디 그룹 목록을 가져옵니다.
+     */
+    suspend fun getMyOwnedGroups(): List<StudyGroup> {
+        return groupApi.getMyOwnedGroups()
+    }
 }
