@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row // Row 임포트
 import androidx.compose.foundation.layout.Spacer // Spacer 임포트
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,6 +40,8 @@ import androidx.navigation.NavController
 import kr.ac.uc.test_2025_05_19_k.model.StudyGroup
 import kr.ac.uc.test_2025_05_19_k.ui.common.GroupCard
 import kr.ac.uc.test_2025_05_19_k.viewmodel.GroupManagementViewModel
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.ui.graphics.Color
 
 private val tabs = listOf("참여한 그룹", "만든 그룹")
 
@@ -60,7 +63,8 @@ fun GroupManagementScreen(
     Column(modifier = Modifier.fillMaxSize()) {
         PrimaryTabRow(
             selectedTabIndex = selectedTabIndex,
-            // ... (이전 코드와 동일) ...
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.primary,
             modifier = Modifier.fillMaxWidth()
         ) {
             tabs.forEachIndexed { index, title ->
@@ -75,54 +79,48 @@ fun GroupManagementScreen(
         }
 
         when (selectedTabIndex) {
-            0 -> {
+            0 -> { // 참여한 그룹 탭
                 val joinedGroups by viewModel.joinedGroups.collectAsState()
                 val isLoading by viewModel.isLoadingJoined.collectAsState()
                 val errorMessage by viewModel.errorMessage.collectAsState()
-                GroupListContent( // 참여한 그룹은 기존 GroupListContent 사용
+                GroupListContent(
                     groups = joinedGroups,
                     isLoading = isLoading,
                     errorMessage = errorMessage,
                     navController = navController,
-                    emptyListMessage = "참여한 스터디 그룹이 없습니다."
+                    emptyListMessage = "참여한 스터디 그룹이 없습니다.",
+                    onGroupClick = { groupId ->
+                        // 참여한 그룹은 기존 상세 화면으로 이동
+                        navController.navigate("group_detail/$groupId")
+                    }
                 )
             }
-            1 -> { // "만든 그룹" 탭을 위한 별도 Composable 호출
+            1 -> { // 만든 그룹 탭
                 CreatedGroupsTabContent(navController = navController, viewModel = viewModel)
             }
         }
     }
 }
 
+
 @Composable
 fun CreatedGroupsTabContent(
     navController: NavController,
-    viewModel: GroupManagementViewModel // ViewModel 직접 전달
+    viewModel: GroupManagementViewModel
 ) {
     val ownedGroups by viewModel.ownedGroups.collectAsState()
     val isLoading by viewModel.isLoadingOwned.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 
-    if (isLoading) {
-        Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-    } else if (errorMessage != null) {
-        Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
-            // 또는 안전 호출 사용
-            errorMessage?.let { msg ->
-                Text(text = msg, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.error)
-            }
-        }
-    } else if (ownedGroups.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
-            Text(text = "만든 스터디 그룹이 없습니다.", style = MaterialTheme.typography.bodyLarge)
-        }
-    } else {
+    // Box를 사용하여 리스트 위에 로딩, 에러, 빈 상태 메시지를 띄우는 구조로 변경
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        // 스터디 그룹 목록을 표시하는 LazyColumn은 항상 Composition에 포함
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp), // contentPadding으로 변경
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(items = ownedGroups, key = { group -> group.groupId }) { group ->
@@ -130,31 +128,38 @@ fun CreatedGroupsTabContent(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(modifier = Modifier.weight(1f)) { // GroupCard가 남은 공간을 채우도록
+                    Box(modifier = Modifier.weight(1f)) {
                         GroupCard(group = group) {
-                            // 만든 그룹 카드 클릭 시 상세 화면으로 이동 (기존과 동일)
-                            navController.navigate("group_detail/${group.groupId}")
+                            navController.navigate("group_admin_detail/${group.groupId}")
                         }
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
                     IconButton(onClick = {
-                        // 그룹 편집 화면으로 이동 (groupId 전달)
                         navController.navigate("group_edit/${group.groupId}")
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Edit,
-                            contentDescription = "그룹 수정",
-                            tint = MaterialTheme.colorScheme.primary
+                            contentDescription = "그룹 정보 수정"
                         )
                     }
                 }
             }
         }
+
+        // 상태에 따라 로딩, 에러, 빈 목록 메시지를 LazyColumn 위에 표시
+        if (isLoading) {
+            CircularProgressIndicator()
+        } else errorMessage?.let {
+            Text(
+                text = it,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
     }
 }
 
-
-// GroupListContent 함수는 이전과 동일하게 유지 (참여한 그룹 탭에서 사용)
+// GroupListContent 함수는 이전과 동일 (참여한 그룹 탭에서 사용)
 @Composable
 fun GroupListContent(
     groups: List<StudyGroup>,
@@ -162,9 +167,8 @@ fun GroupListContent(
     errorMessage: String?,
     navController: NavController,
     emptyListMessage: String,
-    onGroupClick: (Long) -> Unit = { groupId -> navController.navigate("group_detail/$groupId") }
+    onGroupClick: (Long) -> Unit
 ) {
-    // ... (이전 GroupListContent 코드와 동일)
     if (isLoading) {
         Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()

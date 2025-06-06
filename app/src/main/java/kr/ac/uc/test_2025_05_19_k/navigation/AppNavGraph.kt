@@ -28,6 +28,7 @@ import kr.ac.uc.test_2025_05_19_k.ui.group.detail.GroupDetailScreen // GroupDeta
 import kr.ac.uc.test_2025_05_19_k.ui.search.SearchScreen
 import kr.ac.uc.test_2025_05_19_k.ui.search.SearchResultScreen
 import kotlinx.coroutines.delay
+import kr.ac.uc.test_2025_05_19_k.ui.group.GroupAdminDetailScreen
 import kr.ac.uc.test_2025_05_19_k.ui.group.GroupEditScreen
 
 
@@ -50,7 +51,6 @@ fun AppNavGraph(
     navController: NavHostController,
     startDestination: String
 ) {
-
     LogCurrentScreen(navController)
 
     NavHost(
@@ -149,21 +149,18 @@ fun AppNavGraph(
         }
 
         // --- 기타 화면 라우트 ---
-        composable( // 여기가 대략 163번째 줄 근처일 것으로 예상됩니다.
+        composable(
             route = "group_detail/{groupId}",
             arguments = listOf(navArgument("groupId") { type = NavType.LongType })
         ) { backStackEntry ->
-            // NavController를 올바르게 전달하고 onBack 파라미터 제거
             val groupIdArg = backStackEntry.arguments?.getLong("groupId") ?: -1L
             if (groupIdArg != -1L) {
                 GroupDetailScreen(
-                    navController = navController, // navController 전달
+                    navController = navController,
                     groupId = groupIdArg
                 )
             } else {
-                // 유효하지 않은 groupId 처리 (예: 오류 메시지 표시 또는 이전 화면으로 이동)
                 Text("오류: 유효하지 않은 그룹 ID입니다.")
-                // navController.popBackStack() // 또는 이전 화면으로 돌려보낼 수 있음
             }
         }
         composable("group_create") {
@@ -200,6 +197,17 @@ fun AppNavGraph(
                 GroupEditScreen(navController = navController, groupId = groupId)
             } else {
                 Text("오류: 유효하지 않은 그룹 ID 입니다.")
+            }
+        }
+        composable(
+            route = "group_admin_detail/{groupId}",
+            arguments = listOf(navArgument("groupId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getLong("groupId") ?: -1L
+            if (groupId != -1L) {
+                GroupAdminDetailScreen(navController = navController, groupId = groupId)
+            } else {
+                Text("오류: 유효하지 않은 그룹 ID 입니다. (관리자 상세)")
             }
         }
     }
