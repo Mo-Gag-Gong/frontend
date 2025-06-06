@@ -1,12 +1,14 @@
 // mo-gag-gong/frontend/frontend-dev-hj/app/src/main/java/kr/ac/uc/test_2025_05_19_k/repository/GroupRepository.kt
 package kr.ac.uc.test_2025_05_19_k.repository
 
+import kr.ac.uc.test_2025_05_19_k.model.GroupNoticeDto
 import kr.ac.uc.test_2025_05_19_k.model.PageGroupNoticeDto
 import kr.ac.uc.test_2025_05_19_k.model.StudyGroup // StudyGroup은 이미 임포트 되어 있을 것입니다.
 import kr.ac.uc.test_2025_05_19_k.model.StudyGroupDetail
 import kr.ac.uc.test_2025_05_19_k.network.api.GroupApi
 import kr.ac.uc.test_2025_05_19_k.model.request.GroupCreateRequest
 import kr.ac.uc.test_2025_05_19_k.model.PageStudyGroupDto // PageStudyGroupDto 임포트
+import kr.ac.uc.test_2025_05_19_k.model.request.GroupNoticeCreateRequest
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -52,5 +54,9 @@ class GroupRepository @Inject constructor(
     }
     suspend fun getGroupNotices(groupId: Long, page: Int, size: Int): PageGroupNoticeDto {
         return groupApi.getGroupNotices(groupId, page, size)
+    }
+
+    suspend fun createNotice(groupId: Long, request: GroupNoticeCreateRequest): GroupNoticeDto {
+        return groupApi.createNotice(groupId, request)
     }
 }

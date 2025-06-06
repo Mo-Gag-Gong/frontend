@@ -1,11 +1,13 @@
 // mo-gag-gong/frontend/frontend-dev-hj/app/src/main/java/kr/ac/uc/test_2025_05_19_k/network/api/GroupApi.kt
 package kr.ac.uc.test_2025_05_19_k.network.api
 
+import kr.ac.uc.test_2025_05_19_k.model.GroupNoticeDto
 import kr.ac.uc.test_2025_05_19_k.model.PageGroupNoticeDto
 import kr.ac.uc.test_2025_05_19_k.model.PageStudyGroupDto
 import kr.ac.uc.test_2025_05_19_k.model.StudyGroup
 import kr.ac.uc.test_2025_05_19_k.model.StudyGroupDetail
 import kr.ac.uc.test_2025_05_19_k.model.request.GroupCreateRequest
+import kr.ac.uc.test_2025_05_19_k.model.request.GroupNoticeCreateRequest
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -57,4 +59,10 @@ interface GroupApi {
         @Query("page") page: Int? = 0,
         @Query("size") size: Int? = 10 // 페이지네이션 지원
     ): PageGroupNoticeDto
+
+    @POST("/api/groups/{groupId}/notices")
+    suspend fun createNotice(
+        @Path("groupId") groupId: Long,
+        @Body request: GroupNoticeCreateRequest
+    ): GroupNoticeDto // API 명세에 따르면 성공 시 생성된 GroupNoticeDto 반환
 }

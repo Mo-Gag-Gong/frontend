@@ -30,6 +30,7 @@ import kr.ac.uc.test_2025_05_19_k.ui.search.SearchResultScreen
 import kotlinx.coroutines.delay
 import kr.ac.uc.test_2025_05_19_k.ui.group.GroupAdminDetailScreen
 import kr.ac.uc.test_2025_05_19_k.ui.group.GroupEditScreen
+import kr.ac.uc.test_2025_05_19_k.ui.group.NoticeCreateScreen
 
 
 // 현재 화면 로깅을 위한 Composable 함수 (이전과 동일)
@@ -208,6 +209,15 @@ fun AppNavGraph(
                 GroupAdminDetailScreen(navController = navController, groupId = groupId)
             } else {
                 Text("오류: 유효하지 않은 그룹 ID 입니다. (관리자 상세)")
+            }
+        }
+        composable(
+            route = "notice_create/{groupId}",
+            arguments = listOf(navArgument("groupId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getLong("groupId") ?: -1L
+            if (groupId != -1L) {
+                NoticeCreateScreen(navController = navController, groupId = groupId)
             }
         }
     }
