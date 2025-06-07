@@ -5,7 +5,7 @@ import kr.ac.uc.test_2025_05_19_k.network.ApiService
 
 import javax.inject.Inject
 
-class ProfileRepository @Inject constructor(
+class ProfileRequest @Inject constructor(
     private val api: ApiService
 ) {
     suspend fun getProfile() = api.getMyProfile()

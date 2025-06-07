@@ -10,41 +10,57 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="67c65720-3193-4226-a577-9638b6737d69" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/InterestDto.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/OnboardingStatusResponse.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/ProfileUpdateRequest.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/RefreshTokenRequest.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/UserProfileResponse.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/repository/InterestRepository.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/repository/ProfileCacheManager.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/gps/GPSSettingScreen.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/gps/RegionSettingScreen.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/profile/InterestSelectScreen.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/profile/SignInScreen.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/InterestViewModel.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/OnboardingViewModel.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/ProfileInputViewModel.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/RegionSettingViewModel.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/local.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/appInsightsSettings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/GroupNoticeDto.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/PageGroupNoticeDto.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/PageStudyGroupDto.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/request/GroupNoticeCreateRequest.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/navigation/BottomNavigationBar.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/group/GroupAdminDetailScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/group/GroupEditScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/group/GroupManagementScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/group/NoticeCreateScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/profile/MyProfileScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/schedule/ScheduleScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/search/SearcgScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/search/SearchResultScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/GroupAdminDetailViewModel.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/GroupEditViewModel.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/GroupManagementViewModel.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/NoticeCreateViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/data/local/UserPreference.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/data/local/UserPreference.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/di/NetworkModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/di/NetworkModule.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/StudyGroup.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/StudyGroup.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/StudyGroupDetail.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/StudyGroupDetail.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/UserProfile.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/UserProfileResponse.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/UserProfileResponse.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/auth/TokenResponse.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/auth/TokenResponse.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/request/GroupCreateRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/request/GroupCreateRequest.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/request/ProfileRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/model/request/ProfileRequest.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/navigation/AppNavGraph.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/navigation/AppNavGraph.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/network/ApiService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/network/ApiService.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/network/AuthInterceptor.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/network/AuthInterceptor.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/repository/ProfileRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/repository/ProfileRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/network/api/GroupApi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/network/api/GroupApi.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/repository/GroupRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/repository/GroupRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/repository/InterestRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/repository/InterestRepository.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/repository/TokenManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/repository/TokenManager.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/auth/AuthCallbackActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/auth/AuthCallbackActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/profile/ProfileSettingScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/profile/ProfileSettingScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/profile/ProfileUiState.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/profile/ProfileUiState.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/util/LocationUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/util/LocationUtils.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/ProfileViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/ProfileViewModel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/common/GroupCard.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/common/GroupCard.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/group/create/GroupCreateScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/group/create/GroupCreateScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/group/detail/GroupDetailScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/group/detail/GroupDetailScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/home/HomeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/home/HomeScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/profile/SignInScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/profile/SignInScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/GroupCreateViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/GroupCreateViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/GroupDetailViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/GroupDetailViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/HomeViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel/HomeViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/local.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +70,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R3CN80XYXGE)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\a0102\.android\avd\Pixel_3a.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -87,6 +103,19 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="REMOTE">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="origin/dev-hj" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -119,7 +148,7 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev-cy&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Merging dev-cy&quot;,
     &quot;last_directory_selection&quot;: &quot;C:/Users/a0102/Desktop/code/qwertytrew/test_2025_05_19_k/app/src/main/java/kr/ac/uc/test_2025_05_19_k/viewmodel&quot;
   }
 }</component>

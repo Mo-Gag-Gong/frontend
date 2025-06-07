@@ -1,3 +1,4 @@
+// mo-gag-gong/frontend/frontend-dev-hj/app/src/main/java/kr/ac/uc/test_2025_05_19_k/ui/common/GroupCard.kt
 package kr.ac.uc.test_2025_05_19_k.ui.common
 
 import androidx.compose.foundation.clickable
@@ -26,7 +27,7 @@ fun GroupCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = group.name,
+                text = group.title,
                 style = MaterialTheme.typography.titleMedium
             )
 
@@ -42,13 +43,14 @@ fun GroupCard(
 
             Row {
                 Text(
-                    text = "#${group.category}",
+                    text = "#${group.interestName}",
                     style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.padding(end = 12.dp)
                 )
 
+                // 현재 인원과 최대 인원을 함께 표시
                 Text(
-                    text = "인원 ${group.memberCount}명",
+                    text = "인원 ${group.currentMembers}/${group.maxMembers}명", // 수정된 부분
                     style = MaterialTheme.typography.labelSmall
                 )
             }

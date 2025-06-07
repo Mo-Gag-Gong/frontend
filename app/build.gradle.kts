@@ -40,8 +40,10 @@ dependencies {
 
     implementation(platform("androidx.compose:compose-bom:2024.05.00")) // 최신버전
     implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material")
+    implementation("androidx.compose.material3:material3:1.2.1")
+    implementation("androidx.compose.material:material-icons-core:1.6.7") // 최신 안정 버전 확인 권장
+    // Material Icons (확장 아이콘 - 더 많은 아이콘 포함, 필요시 추가)
+    implementation("androidx.compose.material:material-icons-extended:1.6.7") // 최신 안정 버전 확인 권장
     implementation("androidx.compose.ui:ui-tooling-preview")
 
 

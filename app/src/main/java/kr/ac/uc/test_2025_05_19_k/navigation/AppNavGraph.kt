@@ -1,13 +1,20 @@
+// app/src/main/java/kr/ac/uc/test_2025_05_19_k/navigation/AppNavGraph.kt
 package kr.ac.uc.test_2025_05_19_k.navigation
 
+import android.util.Log
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import kotlinx.coroutines.delay
 import kr.ac.uc.test_2025_05_19_k.ui.*
 import kr.ac.uc.test_2025_05_19_k.ui.gps.RegionSettingScreen
 import kr.ac.uc.test_2025_05_19_k.ui.group.create.GroupCreateScreen
@@ -17,43 +24,50 @@ import kr.ac.uc.test_2025_05_19_k.ui.profile.SignInProfileSettingScreen
 import kr.ac.uc.test_2025_05_19_k.ui.gps.SignInGPSSettingScreen
 import kr.ac.uc.test_2025_05_19_k.ui.profile.InterestSelectScreenHost
 import kr.ac.uc.test_2025_05_19_k.ui.profile.SignInScreen
+import kr.ac.uc.test_2025_05_19_k.ui.schedule.ScheduleScreen
+import kr.ac.uc.test_2025_05_19_k.ui.group.GroupManagementScreen
+import kr.ac.uc.test_2025_05_19_k.ui.profile.MyProfileScreen
+import kr.ac.uc.test_2025_05_19_k.ui.search.SearchScreen
+import kr.ac.uc.test_2025_05_19_k.ui.search.SearchResultScreen
+import kr.ac.uc.test_2025_05_19_k.ui.group.GroupAdminDetailScreen
+import kr.ac.uc.test_2025_05_19_k.ui.group.GroupEditScreen
+import kr.ac.uc.test_2025_05_19_k.ui.group.NoticeCreateScreen
 
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.navigation.compose.currentBackStackEntryAsState
-import android.util.Log
-import kotlinx.coroutines.delay
-
-
-
+/**
+ * 현재 라우트를 1초마다 로그로 출력 (디버깅용)
+ */
 @Composable
 fun LogCurrentScreen(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-
-    // 10초마다 현재 route를 로그로 출력
     LaunchedEffect(Unit) {
         while (true) {
             val currentRoute = navBackStackEntry?.destination?.route
             Log.d("CurrentScreenLogger", "현재 화면(route): $currentRoute")
-            delay(10_00L)
+            delay(1000L)
         }
     }
 }
 
-
-
+/**
+ * 앱 내비게이션 그래프
+ * @param modifier Modifier
+ * @param navController NavHostController
+ * @param startDestination 시작 라우트
+ */
 @Composable
 fun AppNavGraph(
-    navController: NavHostController = rememberNavController(),
-    startDestination: String = "login"
-
-
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    startDestination: String
 ) {
-
     LogCurrentScreen(navController)
 
-    NavHost(navController = navController, startDestination = startDestination) {
-        // 1. 로그인
+    NavHost(
+        navController = navController,
+        startDestination = startDestination,
+        modifier = modifier
+    ) {
+        // 1. 로그인 화면
         composable("login") {
             SignInScreen(
                 onNavigateNext = {
@@ -63,15 +77,17 @@ fun AppNavGraph(
                 }
             )
         }
+
         // 2. 프로필 입력
         composable("profile_input") {
             SignInProfileSettingScreen(
-                navController = navController,  // ← 이 줄 추가!
+                navController = navController,
                 onNext = { name, gender, phone, birth ->
                     navController.navigate("interest_select/$name/$gender/$phone/$birth")
                 }
             )
         }
+
         // 3. 관심사 선택
         composable(
             "interest_select/{name}/{gender}/{phone}/{birth}",
@@ -91,62 +107,135 @@ fun AppNavGraph(
                 navController = navController,
                 onNext = {
                     navController.navigate("gps_setting") {
-                        popUpTo("interest_select") { inclusive = true }
+                        popUpTo("interest_select/$name/$gender/$phone/$birth") {
+                            inclusive = true
+                        }
                     }
                 }
             )
-
         }
+
         // 4. 위치 권한 요청
         composable("gps_setting") {
             SignInGPSSettingScreen(
                 onBack = { navController.popBackStack() },
                 onLocationGranted = {
-                    navController.navigate("region_setting") {
+                    navController.navigate(BottomNavItem.Home.route) {
                         popUpTo("gps_setting") { inclusive = true }
                     }
                 }
             )
         }
-        // 5. 지역 선택/확인
+
+        // 5. 지역 선택/확인 (필요하다면 라우트 활성화)
         composable("region_setting") {
-            // hiltViewModel() 자동 주입 (RegionSettingScreen 파라미터에서 직접 사용)
             RegionSettingScreen(
                 navController = navController,
-                onBack = { navController.popBackStack() },    // ← 뒤로가기
-                onDone = { region ->
-                    navController.navigate("home") {          // ← 홈으로 이동
+                onBack = { navController.popBackStack() },
+                onDone = {
+                    navController.navigate(BottomNavItem.Home.route) {
                         popUpTo("region_setting") { inclusive = true }
                     }
                 }
-                // viewModel은 RegionSettingScreen 내부에서 hiltViewModel()로 주입
             )
         }
 
-
-        // ==== 그룹/홈 화면 영역 ====
-        // 7. 홈 화면
-        composable("home") {
+        // --- 하단 네비게이션 바가 있는 주요 화면 ---
+        composable(BottomNavItem.Home.route) {
             HomeScreen(
+                navController = navController,
                 onGroupClick = { groupId ->
                     navController.navigate("group_detail/$groupId")
                 },
                 onCreateGroupClick = {
                     navController.navigate("group_create")
+                },
+                onNavigateToSearch = {
+                    navController.navigate("search")
                 }
             )
         }
-        // 8. 그룹 상세
+        composable(BottomNavItem.Schedule.route) {
+            ScheduleScreen(navController = navController)
+        }
+        composable(BottomNavItem.GroupManagement.route) {
+            GroupManagementScreen(navController = navController)
+        }
+        composable(BottomNavItem.MyProfile.route) {
+            MyProfileScreen(navController = navController)
+        }
+
+        // --- 그룹 상세/생성/관리 등 추가 화면 ---
         composable(
-            "group_detail/{groupId}",
+            route = "group_detail/{groupId}",
             arguments = listOf(navArgument("groupId") { type = NavType.LongType })
         ) { backStackEntry ->
-            val groupId = backStackEntry.arguments?.getLong("groupId") ?: return@composable
-            GroupDetailScreen(groupId = groupId, onBack = { navController.popBackStack() })
+            val groupIdArg = backStackEntry.arguments?.getLong("groupId") ?: -1L
+            if (groupIdArg != -1L) {
+                GroupDetailScreen(
+                    navController = navController,
+                    groupId = groupIdArg
+                )
+            } else {
+                Text("오류: 유효하지 않은 그룹 ID입니다.")
+            }
         }
-        // 9. 그룹 생성
         composable("group_create") {
             GroupCreateScreen(navController = navController)
+        }
+        composable(
+            route = "group_edit/{groupId}",
+            arguments = listOf(navArgument("groupId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getLong("groupId") ?: -1L
+            if (groupId != -1L) {
+                GroupEditScreen(navController = navController, groupId = groupId)
+            } else {
+                Text("오류: 유효하지 않은 그룹 ID 입니다.")
+            }
+        }
+        composable(
+            route = "group_admin_detail/{groupId}",
+            arguments = listOf(navArgument("groupId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getLong("groupId") ?: -1L
+            if (groupId != -1L) {
+                GroupAdminDetailScreen(navController = navController, groupId = groupId)
+            } else {
+                Text("오류: 유효하지 않은 그룹 ID 입니다. (관리자 상세)")
+            }
+        }
+        composable(
+            route = "notice_create/{groupId}",
+            arguments = listOf(navArgument("groupId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getLong("groupId") ?: -1L
+            if (groupId != -1L) {
+                NoticeCreateScreen(navController = navController, groupId = groupId)
+            }
+        }
+
+        // --- 검색 화면 ---
+        composable("search") {
+            SearchScreen(
+                navController = navController,
+                onSearch = { query ->
+                    navController.navigate("search_result/$query")
+                }
+            )
+        }
+        composable(
+            "search_result/{query}",
+            arguments = listOf(navArgument("query") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val query = backStackEntry.arguments?.getString("query") ?: ""
+            SearchResultScreen(
+                navController = navController,
+                searchQuery = query,
+                onGroupClick = { groupId ->
+                    navController.navigate("group_detail/$groupId")
+                }
+            )
         }
     }
 }
