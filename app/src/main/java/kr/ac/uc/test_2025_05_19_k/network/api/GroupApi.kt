@@ -13,6 +13,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.PUT
 import retrofit2.http.Query
 
@@ -65,4 +66,16 @@ interface GroupApi {
         @Path("groupId") groupId: Long,
         @Body request: GroupNoticeCreateRequest
     ): GroupNoticeDto // API 명세에 따르면 성공 시 생성된 GroupNoticeDto 반환
+
+    @DELETE("/api/groups/{groupId}/notices/{noticeId}")
+    suspend fun deleteNotice(
+        @Path("groupId") groupId: Long,
+        @Path("noticeId") noticeId: Long
+    ): Response<Void> // 성공 시 응답 본문이 없으므로 Response<Void> 사용
+    @PUT("/api/groups/{groupId}/notices/{noticeId}")
+    suspend fun updateNotice(
+        @Path("groupId") groupId: Long,
+        @Path("noticeId") noticeId: Long,
+        @Body request: GroupNoticeCreateRequest // 생성과 동일한 DTO 사용
+    ): GroupNoticeDto // 성공 시 수정된 GroupNoticeDto 반환
 }

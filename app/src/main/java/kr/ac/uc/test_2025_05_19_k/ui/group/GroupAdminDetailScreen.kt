@@ -2,6 +2,7 @@
 package kr.ac.uc.test_2025_05_19_k.ui.group
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,7 +35,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 // 탭 제목 리스트
 private val adminDetailTabs = listOf("공지 사항", "멤버", "그룹 목표", "채팅", "모임")
@@ -112,8 +116,7 @@ fun GroupAdminDetailScreen(
                     AdminNoticesScreen(
                         navController = navController,
                         groupId = groupId,
-                        notices = notices,
-                        isLoading = isLoadingNotices
+                        viewModel = viewModel
                     )
                 }
             }
@@ -125,9 +128,37 @@ fun GroupAdminDetailScreen(
 fun AdminNoticesScreen(
     navController: NavController,
     groupId: Long,
-    notices: List<GroupNoticeDto>,
-    isLoading: Boolean
+    viewModel: GroupAdminDetailViewModel = hiltViewModel()
 ) {
+    val notices by viewModel.groupNotices.collectAsState()
+    val isLoading by viewModel.isLoadingNotices.collectAsState()
+    val showDeleteDialog by viewModel.showDeleteConfirmDialog.collectAsState()
+    val context = LocalContext.current
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { viewModel.onDismissDeleteDialog() },
+            title = { Text("공지사항 삭제") },
+            text = { Text("정말로 이 공지사항을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteNotice { errorMsg ->
+                            Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                ) {
+                    Text("삭제")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.onDismissDeleteDialog() }) {
+                    Text("취소")
+                }
+            }
+        )
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         if (isLoading && notices.isEmpty()) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -144,8 +175,15 @@ fun AdminNoticesScreen(
                 items(items = notices, key = { it.noticeId }) { notice ->
                     AdminNoticeCard(
                         notice = notice,
-                        onEdit = { /* TODO: 수정 화면으로 이동 */ },
-                        onDelete = { /* TODO: 삭제 확인 다이얼로그 표시 */ }
+                        onEdit = { selectedNotice ->
+                            // URL 파라미터로 전달하기 위해 인코딩
+                            val encodedTitle = URLEncoder.encode(selectedNotice.title, StandardCharsets.UTF_8.toString())
+                            val encodedContent = URLEncoder.encode(selectedNotice.content, StandardCharsets.UTF_8.toString())
+                            navController.navigate("notice_edit/${selectedNotice.groupId}/${selectedNotice.noticeId}?title=${encodedTitle}&content=${encodedContent}")
+                        },
+                        onDelete = {
+                            viewModel.onOpenDeleteDialog(notice.noticeId)
+                        }
                     )
                 }
             }
@@ -170,7 +208,7 @@ fun AdminNoticesScreen(
 @Composable
 fun AdminNoticeCard(
     notice: GroupNoticeDto,
-    onEdit: () -> Unit,
+    onEdit: (notice: GroupNoticeDto) -> Unit, // 파라미터로 notice 객체 전달
     onDelete: () -> Unit
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
@@ -192,7 +230,7 @@ fun AdminNoticeCard(
                     .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                TextButton(onClick = onEdit) { Text("수정") }
+                TextButton(onClick = { onEdit(notice) }) { Text("수정") }
                 TextButton(onClick = onDelete, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) { Text("삭제") }
             }
         }

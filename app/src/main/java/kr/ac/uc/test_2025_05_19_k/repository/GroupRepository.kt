@@ -59,4 +59,10 @@ class GroupRepository @Inject constructor(
     suspend fun createNotice(groupId: Long, request: GroupNoticeCreateRequest): GroupNoticeDto {
         return groupApi.createNotice(groupId, request)
     }
+    suspend fun deleteNotice(groupId: Long, noticeId: Long): Response<Void> {
+        return groupApi.deleteNotice(groupId, noticeId)
+    }
+    suspend fun updateNotice(groupId: Long, noticeId: Long, request: GroupNoticeCreateRequest): GroupNoticeDto {
+        return groupApi.updateNotice(groupId, noticeId, request)
+    }
 }

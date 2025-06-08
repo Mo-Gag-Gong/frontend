@@ -42,6 +42,11 @@ class GroupAdminDetailViewModel @Inject constructor(
     private val noticePageSize = 20
     private var isLastNoticePage = false
 
+    private val _showDeleteConfirmDialog = MutableStateFlow(false)
+    val showDeleteConfirmDialog: StateFlow<Boolean> = _showDeleteConfirmDialog.asStateFlow()
+
+    private var noticeIdToDelete: Long? = null
+
 
     init {
         if (groupId != -1L) {
@@ -89,6 +94,51 @@ class GroupAdminDetailViewModel @Inject constructor(
                 // TODO: 오류 상태 관리
             } finally {
                 _isLoadingNotices.value = false
+            }
+        }
+    }
+
+    fun onOpenDeleteDialog(noticeId: Long) {
+        noticeIdToDelete = noticeId
+        _showDeleteConfirmDialog.value = true
+    }
+
+    /**
+     * 삭제 확인 대화상자를 닫습니다.
+     */
+    fun onDismissDeleteDialog() {
+        noticeIdToDelete = null
+        _showDeleteConfirmDialog.value = false
+    }
+
+    /**
+     * 저장된 noticeIdToDelete를 사용하여 공지사항을 삭제합니다.
+     */
+    fun deleteNotice(onError: (String) -> Unit) {
+        val noticeId = noticeIdToDelete
+        if (noticeId == null) {
+            onError("삭제할 공지사항이 선택되지 않았습니다.")
+            onDismissDeleteDialog()
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                val response = groupRepository.deleteNotice(groupId, noticeId)
+                if (response.isSuccessful) {
+                    Log.d("GroupAdminDetailVM", "공지사항 삭제 성공 (ID: $noticeId)")
+                    // 삭제 성공 후 목록 새로고침
+                    fetchNoticesFirstPage()
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "알 수 없는 서버 오류"
+                    Log.e("GroupAdminDetailVM", "공지사항 삭제 API 실패: ${response.code()} - $errorBody")
+                    onError("공지사항 삭제에 실패했습니다.")
+                }
+            } catch (e: Exception) {
+                Log.e("GroupAdminDetailVM", "공지사항 삭제 중 예외 발생: ${e.message}", e)
+                onError("오류가 발생하여 공지사항을 삭제하지 못했습니다.")
+            } finally {
+                onDismissDeleteDialog() // 대화상자 닫기
             }
         }
     }

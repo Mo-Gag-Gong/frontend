@@ -31,6 +31,10 @@ import kotlinx.coroutines.delay
 import kr.ac.uc.test_2025_05_19_k.ui.group.GroupAdminDetailScreen
 import kr.ac.uc.test_2025_05_19_k.ui.group.GroupEditScreen
 import kr.ac.uc.test_2025_05_19_k.ui.group.NoticeCreateScreen
+import java.net.URLDecoder // URL 디코딩을 위해 추가
+import java.net.URLEncoder // URL 인코딩을 위해 추가
+import java.nio.charset.StandardCharsets
+import kr.ac.uc.test_2025_05_19_k.ui.group.NoticeEditScreen
 
 
 // 현재 화면 로깅을 위한 Composable 함수 (이전과 동일)
@@ -218,6 +222,31 @@ fun AppNavGraph(
             val groupId = backStackEntry.arguments?.getLong("groupId") ?: -1L
             if (groupId != -1L) {
                 NoticeCreateScreen(navController = navController, groupId = groupId)
+            }
+        }
+        composable(
+            route = "notice_edit/{groupId}/{noticeId}?title={title}&content={content}",
+            arguments = listOf(
+                navArgument("groupId") { type = NavType.LongType },
+                navArgument("noticeId") { type = NavType.LongType },
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getLong("groupId") ?: -1L
+            val noticeId = backStackEntry.arguments?.getLong("noticeId") ?: -1L
+            // URL로 전달된 문자열은 디코딩해야 할 수 있습니다.
+            val title = backStackEntry.arguments?.getString("title")?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.toString()) } ?: ""
+            val content = backStackEntry.arguments?.getString("content")?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.toString()) } ?: ""
+
+            if (groupId != -1L && noticeId != -1L) {
+                NoticeEditScreen(
+                    navController = navController,
+                    groupId = groupId,
+                    noticeId = noticeId,
+                    initialTitle = title,
+                    initialContent = content
+                )
             }
         }
     }
