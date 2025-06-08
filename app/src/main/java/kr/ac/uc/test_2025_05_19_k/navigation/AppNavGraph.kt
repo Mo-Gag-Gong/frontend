@@ -1,19 +1,13 @@
-// app/src/main/java/kr/ac/uc/test_2025_05_19_k/navigation/AppNavGraph.kt
 package kr.ac.uc.test_2025_05_19_k.navigation
 
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
+import androidx.navigation.*
+import androidx.navigation.compose.*
 import kotlinx.coroutines.delay
 import kr.ac.uc.test_2025_05_19_k.ui.*
 import kr.ac.uc.test_2025_05_19_k.ui.gps.RegionSettingScreen
@@ -33,27 +27,30 @@ import kr.ac.uc.test_2025_05_19_k.ui.group.GroupAdminDetailScreen
 import kr.ac.uc.test_2025_05_19_k.ui.group.GroupEditScreen
 import kr.ac.uc.test_2025_05_19_k.ui.group.NoticeCreateScreen
 
-/**
- * 현재 라우트를 1초마다 로그로 출력 (디버깅용)
- */
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
+import kr.ac.uc.test_2025_05_19_k.viewmodel.InterestSelectViewModel
+import kr.ac.uc.test_2025_05_19_k.viewmodel.OnboardingViewModel
+import kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileInputViewModel
+
 @Composable
 fun LogCurrentScreen(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    LaunchedEffect(Unit) {
+    LaunchedEffect(navBackStackEntry) {
+        val dest = navBackStackEntry?.destination
+        val args = navBackStackEntry?.arguments
+        val currentRoute = dest?.route
+        val params = args?.keySet()?.joinToString { key -> "$key=${args.get(key)}" }
         while (true) {
-            val currentRoute = navBackStackEntry?.destination?.route
-            Log.d("CurrentScreenLogger", "현재 화면(route): $currentRoute")
+            Log.d(
+                "CurrentScreenLogger",
+                "현재 화면(route): $currentRoute, params: $params"
+            )
             delay(1000L)
         }
     }
 }
 
-/**
- * 앱 내비게이션 그래프
- * @param modifier Modifier
- * @param navController NavHostController
- * @param startDestination 시작 라우트
- */
 @Composable
 fun AppNavGraph(
     modifier: Modifier = Modifier,
@@ -64,9 +61,14 @@ fun AppNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = startDestination,
+        startDestination = "entry",
         modifier = modifier
     ) {
+        // 🚩 엔트리 분기: 첫 진입시 홈/로그인 자동 분기
+        composable("entry") {
+            EntryScreen(navController)
+        }
+
         // 1. 로그인 화면
         composable("login") {
             SignInScreen(
@@ -83,7 +85,11 @@ fun AppNavGraph(
             SignInProfileSettingScreen(
                 navController = navController,
                 onNext = { name, gender, phone, birth ->
-                    navController.navigate("interest_select/$name/$gender/$phone/$birth")
+                    if (name.isNotBlank() && gender.isNotBlank() && phone.isNotBlank() && birth.isNotBlank()) {
+                        navController.navigate("interest_select/$name/$gender/$phone/$birth")
+                    } else {
+                        Log.w("NAV", "onNext 파라미터 비어있음: $name, $gender, $phone, $birth")
+                    }
                 }
             )
         }
@@ -102,40 +108,64 @@ fun AppNavGraph(
             val gender = backStackEntry.arguments?.getString("gender") ?: ""
             val phone = backStackEntry.arguments?.getString("phone") ?: ""
             val birth = backStackEntry.arguments?.getString("birth") ?: ""
-            InterestSelectScreenHost(
-                userName = name,
-                navController = navController,
-                onNext = {
-                    navController.navigate("gps_setting") {
-                        popUpTo("interest_select/$name/$gender/$phone/$birth") {
-                            inclusive = true
-                        }
-                    }
+
+            val viewModel: InterestSelectViewModel = hiltViewModel()
+            LaunchedEffect(Unit) {
+                if (viewModel.userName.isBlank()) {
+                    viewModel.setUserInfo(name, gender, phone, birth)
                 }
+            }
+
+            InterestSelectScreenHost(
+                navController = navController
             )
         }
 
         // 4. 위치 권한 요청
-        composable("gps_setting") {
+        composable(
+            route = "gps_setting?interestIds={interestIds}",
+            arguments = listOf(
+                navArgument("interestIds") { type = NavType.StringType; defaultValue = "" }
+            )
+        ) { backStackEntry ->
             SignInGPSSettingScreen(
+                backStackEntry = backStackEntry,
                 onBack = { navController.popBackStack() },
-                onLocationGranted = {
-                    navController.navigate(BottomNavItem.Home.route) {
+                onLocationGranted = { interestIds ->
+                    navController.navigate("region_setting?interestIds=${interestIds.joinToString(",")}") {
                         popUpTo("gps_setting") { inclusive = true }
                     }
                 }
             )
         }
 
-        // 5. 지역 선택/확인 (필요하다면 라우트 활성화)
-        composable("region_setting") {
+        // 5. 지역 선택/확인
+        composable("region_setting") { backStackEntry ->
+            val context = LocalContext.current
+            val viewModel: ProfileInputViewModel = hiltViewModel()
+
             RegionSettingScreen(
                 navController = navController,
                 onBack = { navController.popBackStack() },
-                onDone = {
-                    navController.navigate(BottomNavItem.Home.route) {
-                        popUpTo("region_setting") { inclusive = true }
-                    }
+                onDone = { selectedRegion: String ->
+                    Log.d("RegionSettingScreen", "onDone 호출: $selectedRegion")
+                    viewModel.updateLocation(selectedRegion)
+                    Log.d(
+                        "RegionSettingScreen",
+                        "submitProfile 직전 값: name=${viewModel.name}, gender=${viewModel.gender}, phone=${viewModel.phoneNumber}, birth=${viewModel.birthYear}, interestIds=${viewModel.selectedInterestIds}, locationName=${viewModel.locationName}"
+                    )
+                    viewModel.submitProfile(
+                        onSuccess = {
+                            Log.d("RegionSettingScreen", "submitProfile 성공!")
+                            navController.navigate(BottomNavItem.Home.route) {
+                                popUpTo("region_setting") { inclusive = true }
+                            }
+                        },
+                        onError = { msg: String ->
+                            Log.e("RegionSettingScreen", "submitProfile 실패: $msg")
+                            Toast.makeText(context, "프로필 저장 실패: $msg", Toast.LENGTH_SHORT).show()
+                        }
+                    )
                 }
             )
         }
@@ -237,5 +267,32 @@ fun AppNavGraph(
                 }
             )
         }
+    }
+}
+
+// Splash-like 자동 분기용 EntryScreen
+@Composable
+fun EntryScreen(
+    navController: NavController,
+    viewModel: OnboardingViewModel = hiltViewModel()
+) {
+    val checked = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.checkOnboardingStatus { completed ->
+            if (completed) {
+                navController.navigate(BottomNavItem.Home.route) {
+                    popUpTo("entry") { inclusive = true }
+                }
+            } else {
+                navController.navigate("login") {
+                    popUpTo("entry") { inclusive = true }
+                }
+            }
+            checked.value = true
+        }
+    }
+    if (!checked.value) {
+        CircularProgressIndicator()
     }
 }

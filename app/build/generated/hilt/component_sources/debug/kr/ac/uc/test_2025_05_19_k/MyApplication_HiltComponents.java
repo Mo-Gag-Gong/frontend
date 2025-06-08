@@ -44,10 +44,19 @@ import dagger.hilt.components.SingletonComponent;
 import dagger.hilt.internal.GeneratedComponent;
 import dagger.hilt.migration.DisableInstallInCheck;
 import javax.inject.Singleton;
+import kr.ac.uc.test_2025_05_19_k.di.AppModule;
 import kr.ac.uc.test_2025_05_19_k.di.NetworkModule;
 import kr.ac.uc.test_2025_05_19_k.di.RepositoryModule;
+import kr.ac.uc.test_2025_05_19_k.ui.auth.AuthCallbackActivity_GeneratedInjector;
+import kr.ac.uc.test_2025_05_19_k.ui.profile.TokenManagerEntryPoint;
+import kr.ac.uc.test_2025_05_19_k.viewmodel.GroupAdminDetailViewModel_HiltModules;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.GroupCreateViewModel_HiltModules;
+import kr.ac.uc.test_2025_05_19_k.viewmodel.GroupDetailViewModel_HiltModules;
+import kr.ac.uc.test_2025_05_19_k.viewmodel.GroupEditViewModel_HiltModules;
+import kr.ac.uc.test_2025_05_19_k.viewmodel.GroupManagementViewModel_HiltModules;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.HomeViewModel_HiltModules;
+import kr.ac.uc.test_2025_05_19_k.viewmodel.NoticeCreateViewModel_HiltModules;
+import kr.ac.uc.test_2025_05_19_k.viewmodel.OnboardingViewModel_HiltModules;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileInputViewModel_HiltModules;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileViewModel_HiltModules;
 
@@ -120,6 +129,7 @@ public final class MyApplication_HiltComponents {
 
   @Component(
       modules = {
+          AppModule.class,
           ApplicationContextModule.class,
           HiltWrapper_FragmentGetContextFix_FragmentGetContextFixModule.class,
           ActivityRetainedCBuilderModule.class,
@@ -134,7 +144,8 @@ public final class MyApplication_HiltComponents {
       ServiceComponentManager.ServiceComponentBuilderEntryPoint,
       SingletonComponent,
       GeneratedComponent,
-      MyApplication_GeneratedInjector {
+      MyApplication_GeneratedInjector,
+      TokenManagerEntryPoint {
   }
 
   @Subcomponent
@@ -148,11 +159,17 @@ public final class MyApplication_HiltComponents {
 
   @Subcomponent(
       modules = {
+          GroupAdminDetailViewModel_HiltModules.KeyModule.class,
           GroupCreateViewModel_HiltModules.KeyModule.class,
+          GroupDetailViewModel_HiltModules.KeyModule.class,
+          GroupEditViewModel_HiltModules.KeyModule.class,
+          GroupManagementViewModel_HiltModules.KeyModule.class,
           HiltWrapper_ActivityRetainedComponentManager_LifecycleModule.class,
           HomeViewModel_HiltModules.KeyModule.class,
           ActivityCBuilderModule.class,
           ViewModelCBuilderModule.class,
+          NoticeCreateViewModel_HiltModules.KeyModule.class,
+          OnboardingViewModel_HiltModules.KeyModule.class,
           ProfileInputViewModel_HiltModules.KeyModule.class,
           ProfileViewModel_HiltModules.KeyModule.class
       }
@@ -182,7 +199,8 @@ public final class MyApplication_HiltComponents {
       FragmentComponentManager.FragmentComponentBuilderEntryPoint,
       ViewComponentManager.ViewComponentBuilderEntryPoint,
       GeneratedComponent,
-      MainActivity_GeneratedInjector {
+      MainActivity_GeneratedInjector,
+      AuthCallbackActivity_GeneratedInjector {
     @Subcomponent.Builder
     abstract interface Builder extends ActivityComponentBuilder {
     }
@@ -190,9 +208,15 @@ public final class MyApplication_HiltComponents {
 
   @Subcomponent(
       modules = {
+          GroupAdminDetailViewModel_HiltModules.BindsModule.class,
           GroupCreateViewModel_HiltModules.BindsModule.class,
+          GroupDetailViewModel_HiltModules.BindsModule.class,
+          GroupEditViewModel_HiltModules.BindsModule.class,
+          GroupManagementViewModel_HiltModules.BindsModule.class,
           HiltWrapper_HiltViewModelFactory_ViewModelModule.class,
           HomeViewModel_HiltModules.BindsModule.class,
+          NoticeCreateViewModel_HiltModules.BindsModule.class,
+          OnboardingViewModel_HiltModules.BindsModule.class,
           ProfileInputViewModel_HiltModules.BindsModule.class,
           ProfileViewModel_HiltModules.BindsModule.class
       }

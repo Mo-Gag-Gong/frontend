@@ -9,6 +9,7 @@ import android.location.LocationManager
 import android.provider.Settings
 import android.location.Geocoder
 import android.location.Location
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -40,6 +41,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import androidx.navigation.compose.currentBackStackEntryAsState
+import kr.ac.uc.test_2025_05_19_k.data.local.UserPreference
 
 // 현재 네비게이션 스택 기록용
 @Composable
@@ -103,12 +105,11 @@ fun isLocationEnabled(context: Context): Boolean {
     return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
             locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 }
-
 @Composable
 fun RegionSettingScreen(
     navController: NavController,
     onBack: () -> Unit = {},
-    onDone: (String) -> Unit = {},
+    onDone:  (String) -> Unit = {},
     viewModel: RegionSettingViewModel = hiltViewModel()
 ) {
     val navStack = RememberedNavStack(navController)
@@ -132,12 +133,18 @@ fun RegionSettingScreen(
     var isLoading by remember { mutableStateOf(false) }
     var errorMsg by remember { mutableStateOf<String?>(null) }
 
+    // ✅ 권한 안내/설정 이동 다이얼로그 상태
+    var showPermissionDialog by remember { mutableStateOf(false) }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         permissionGranted = isGranted
         isRequestingPermission = false
-        if (!isGranted) errorMsg = "위치 권한이 필요합니다."
+        if (!isGranted) {
+            // 권한 거절 시 안내 다이얼로그 띄움
+            showPermissionDialog = true
+        }
     }
 
     // 위치서비스(GPS) 상태가 바뀔 때 갱신
@@ -145,10 +152,11 @@ fun RegionSettingScreen(
         isLocationEnabledState = isLocationEnabled(context)
     }
 
+
     // 네비게이션 후 무한반복 방지
     LaunchedEffect(isRegionSet) {
-        if (isRegionSet) {
-            onDone(regionName ?: "")
+        if (isRegionSet && !regionName.isNullOrBlank()) {
+            onDone(regionName!!)
             viewModel.resetRegionSet()
         }
     }
@@ -206,13 +214,10 @@ fun RegionSettingScreen(
             Spacer(Modifier.weight(1f))
             Button(
                 onClick = {
+                    Log.d("RegionSettingScreen", "완료 클릭됨: $regionName")
                     regionName?.let {
-                        saveLocationToPrefs(context, it)
+                        UserPreference(context).saveLocation(it)
                         viewModel.setRegionSet(true)
-                        // 현재 스택에 "home"이 있을 때만 popBackStack 실행
-                        if ("home" in navStack) {
-                            navController.popBackStack("home", inclusive = false)
-                        }
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
@@ -296,7 +301,30 @@ fun RegionSettingScreen(
             }
         }
     }
+
+    // ===== 권한 거절 시 다이얼로그 및 설정 바로가기 =====
+    if (showPermissionDialog) {
+        AlertDialog(
+            onDismissRequest = { showPermissionDialog = false },
+            title = { Text("권한 필요") },
+            text = { Text("앱 사용을 위해 위치 권한을 허용해야 합니다.\n\n설정화면에서 권한을 허용해주세요.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    // 앱 설정화면으로 이동
+                    val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = android.net.Uri.parse("package:" + context.packageName)
+                    }
+                    context.startActivity(intent)
+                    showPermissionDialog = false
+                }) { Text("설정으로 이동") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPermissionDialog = false }) { Text("취소") }
+            }
+        )
+    }
 }
+
 
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true, widthDp = 387, heightDp = 812)
 @Composable

@@ -90,4 +90,15 @@ class UserPreference @Inject constructor(@ApplicationContext context: Context) {
             remove(KEY_RECENT_SEARCHES)
         }
     }
+
+    // 지역(region) 값 저장 함수
+    fun saveRegion(region: String) {
+        prefs.edit().putString(KEY_LOCATION, region).apply() // KEY_LOCATION = "location_name"
+    }
+
+    // 지역(region) 값 조회 함수
+    fun getRegion(): String {
+        return prefs.getString(KEY_LOCATION, "") ?: ""
+    }
+
 }

@@ -146,9 +146,9 @@ fun GroupEditScreen(
                     ) {
                         interests.forEach { interest ->
                             DropdownMenuItem(
-                                text = { Text(interest.name) },
+                                text = { Text(interest.interestId.toString()) },
                                 onClick = {
-                                    viewModel.onInterestChange(interest.name)
+                                    viewModel.onInterestChange(interest.interestName)
                                     categoryExpanded = false
                                 }
                             )

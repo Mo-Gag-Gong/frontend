@@ -22,8 +22,9 @@ class InterestRepository @Inject constructor(
             Log.d("InterestRepository", "서버에서 관심사 수신: ${dtoList.size}개, 데이터=$dtoList")
             dtoList.map { dto ->
                 Interest(
-                    id = dto.interestId,    // 서버 응답의 interestId
-                    name = dto.interestName // 서버 응답의 interestName
+                    interestId = dto.interestId,    // 서버 응답의 interestId
+                    interestName = dto.interestName,
+
                 )
             }
         } catch (e: Exception) {

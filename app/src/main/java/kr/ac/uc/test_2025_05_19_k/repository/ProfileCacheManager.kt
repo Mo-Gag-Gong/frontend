@@ -1,53 +1,51 @@
 package kr.ac.uc.test_2025_05_19_k.repository
 
 import android.content.Context
+import android.content.SharedPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import kr.ac.uc.test_2025_05_19_k.ui.profile.ProfileState
+import javax.inject.Singleton
 
+@Singleton
 class ProfileCacheManager @Inject constructor(
-    @ApplicationContext private val context: Context // 반드시 ApplicationContext 어노테이션 붙이기!
+    @ApplicationContext private val context: Context
 ) {
-    private val prefs = context.getSharedPreferences("onboarding_profile_cache", Context.MODE_PRIVATE)
+    private val prefs: SharedPreferences = context.getSharedPreferences("profile_cache", Context.MODE_PRIVATE)
 
-    // 1. 프로필(기본정보) 저장
-    // ProfileState 전체 저장
-    fun saveProfile(profile: ProfileState) {
+    fun saveProfile(profile: CachedProfile) {
         prefs.edit()
             .putString("name", profile.name)
             .putString("gender", profile.gender)
             .putString("phone", profile.phone)
             .putString("birth", profile.birth)
             .putString("location", profile.location)
-            .putString("interests", profile.interests.joinToString(","))
             .apply()
     }
-
-    // 2. 프로필(기본정보) 불러오기
     fun loadProfile(): CachedProfile? {
-        val name = prefs.getString("name", null) ?: return null
-        val gender = prefs.getString("gender", null)
-        val phone = prefs.getString("phone", null) ?: ""
-        val birth = prefs.getString("birth", null) ?: ""
-        val location = prefs.getString("location", null) ?: ""
-        return CachedProfile(name, gender, phone, birth, location)
+        val name = prefs.getString("name", "") ?: ""
+        val gender = prefs.getString("gender", "") ?: ""
+        val phone = prefs.getString("phone", "") ?: ""
+        val birth = prefs.getString("birth", "") ?: ""
+        val location = prefs.getString("location", "") ?: ""
+        return if (name.isNotBlank() || gender.isNotBlank() || phone.isNotBlank() || birth.isNotBlank() || location.isNotBlank()) {
+            CachedProfile(name, gender, phone, birth, location)
+        } else null
     }
-
-    // 3. 관심사 저장 (ID 목록을 콤마로 저장)
-    fun saveInterests(ids: List<Long>) {
-        prefs.edit().putString("interest_ids", ids.joinToString(",")).apply()
+    fun saveInterests(interests: List<Long>) {
+        prefs.edit()
+            .putStringSet("interest_ids", interests.map { it.toString() }.toSet())
+            .apply()
     }
-    // 4. 관심사 불러오기
     fun loadInterests(): List<Long> {
-        return prefs.getString("interest_ids", "")!!.split(",").mapNotNull { it.toLongOrNull() }
+        return prefs.getStringSet("interest_ids", emptySet())?.mapNotNull { it.toLongOrNull() } ?: emptyList()
     }
-
     fun clear() { prefs.edit().clear().apply() }
 }
 
+// 데이터 클래스도 여기 같이 둡니다
 data class CachedProfile(
     val name: String,
-    val gender: String?,
+    val gender: String,
     val phone: String,
     val birth: String,
     val location: String

@@ -6,9 +6,8 @@ import dagger.internal.Factory;
 import dagger.internal.QualifierMetadata;
 import dagger.internal.ScopeMetadata;
 import javax.inject.Provider;
-import kr.ac.uc.test_2025_05_19_k.repository.InterestRepository;
+import kr.ac.uc.test_2025_05_19_k.network.ApiService;
 import kr.ac.uc.test_2025_05_19_k.repository.ProfileCacheManager;
-import kr.ac.uc.test_2025_05_19_k.repository.ProfileRepository;
 
 @ScopeMetadata
 @QualifierMetadata
@@ -20,34 +19,28 @@ import kr.ac.uc.test_2025_05_19_k.repository.ProfileRepository;
     "KotlinInternalInJava"
 })
 public final class ProfileInputViewModel_Factory implements Factory<ProfileInputViewModel> {
-  private final Provider<ProfileRepository> profileRepositoryProvider;
-
-  private final Provider<InterestRepository> interestRepositoryProvider;
-
   private final Provider<ProfileCacheManager> cacheManagerProvider;
 
-  public ProfileInputViewModel_Factory(Provider<ProfileRepository> profileRepositoryProvider,
-      Provider<InterestRepository> interestRepositoryProvider,
-      Provider<ProfileCacheManager> cacheManagerProvider) {
-    this.profileRepositoryProvider = profileRepositoryProvider;
-    this.interestRepositoryProvider = interestRepositoryProvider;
+  private final Provider<ApiService> apiProvider;
+
+  public ProfileInputViewModel_Factory(Provider<ProfileCacheManager> cacheManagerProvider,
+      Provider<ApiService> apiProvider) {
     this.cacheManagerProvider = cacheManagerProvider;
+    this.apiProvider = apiProvider;
   }
 
   @Override
   public ProfileInputViewModel get() {
-    return newInstance(profileRepositoryProvider.get(), interestRepositoryProvider.get(), cacheManagerProvider.get());
+    return newInstance(cacheManagerProvider.get(), apiProvider.get());
   }
 
   public static ProfileInputViewModel_Factory create(
-      Provider<ProfileRepository> profileRepositoryProvider,
-      Provider<InterestRepository> interestRepositoryProvider,
-      Provider<ProfileCacheManager> cacheManagerProvider) {
-    return new ProfileInputViewModel_Factory(profileRepositoryProvider, interestRepositoryProvider, cacheManagerProvider);
+      Provider<ProfileCacheManager> cacheManagerProvider, Provider<ApiService> apiProvider) {
+    return new ProfileInputViewModel_Factory(cacheManagerProvider, apiProvider);
   }
 
-  public static ProfileInputViewModel newInstance(ProfileRepository profileRepository,
-      InterestRepository interestRepository, ProfileCacheManager cacheManager) {
-    return new ProfileInputViewModel(profileRepository, interestRepository, cacheManager);
+  public static ProfileInputViewModel newInstance(ProfileCacheManager cacheManager,
+      ApiService api) {
+    return new ProfileInputViewModel(cacheManager, api);
   }
 }

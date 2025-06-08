@@ -8,6 +8,7 @@ import dagger.internal.QualifierMetadata;
 import dagger.internal.ScopeMetadata;
 import javax.inject.Provider;
 import kr.ac.uc.test_2025_05_19_k.repository.GroupRepository;
+import kr.ac.uc.test_2025_05_19_k.repository.InterestRepository;
 
 @ScopeMetadata
 @QualifierMetadata
@@ -23,24 +24,29 @@ public final class HomeViewModel_Factory implements Factory<HomeViewModel> {
 
   private final Provider<GroupRepository> groupRepositoryProvider;
 
+  private final Provider<InterestRepository> interestRepositoryProvider;
+
   public HomeViewModel_Factory(Provider<Application> applicationProvider,
-      Provider<GroupRepository> groupRepositoryProvider) {
+      Provider<GroupRepository> groupRepositoryProvider,
+      Provider<InterestRepository> interestRepositoryProvider) {
     this.applicationProvider = applicationProvider;
     this.groupRepositoryProvider = groupRepositoryProvider;
+    this.interestRepositoryProvider = interestRepositoryProvider;
   }
 
   @Override
   public HomeViewModel get() {
-    return newInstance(applicationProvider.get(), groupRepositoryProvider.get());
+    return newInstance(applicationProvider.get(), groupRepositoryProvider.get(), interestRepositoryProvider.get());
   }
 
   public static HomeViewModel_Factory create(Provider<Application> applicationProvider,
-      Provider<GroupRepository> groupRepositoryProvider) {
-    return new HomeViewModel_Factory(applicationProvider, groupRepositoryProvider);
+      Provider<GroupRepository> groupRepositoryProvider,
+      Provider<InterestRepository> interestRepositoryProvider) {
+    return new HomeViewModel_Factory(applicationProvider, groupRepositoryProvider, interestRepositoryProvider);
   }
 
-  public static HomeViewModel newInstance(Application application,
-      GroupRepository groupRepository) {
-    return new HomeViewModel(application, groupRepository);
+  public static HomeViewModel newInstance(Application application, GroupRepository groupRepository,
+      InterestRepository interestRepository) {
+    return new HomeViewModel(application, groupRepository, interestRepository);
   }
 }

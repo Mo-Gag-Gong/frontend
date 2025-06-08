@@ -96,9 +96,9 @@ fun GroupCreateScreen(
             ) {
                 interests.forEach { interest ->
                     DropdownMenuItem( // androidx.compose.material3.DropdownMenuItem
-                        text = { Text(interest.name) }, // androidx.compose.material3.Text
+                        text = { Text(interest.interestName) }, // androidx.compose.material3.Text
                         onClick = {
-                            selectedCategory = interest.name
+                            selectedCategory = interest.interestName
                             categoryExpanded = false
                         }
                     )

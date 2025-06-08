@@ -99,10 +99,10 @@ fun HomeScreen(
                 if (interests.isNotEmpty()) {
                     interests.forEach { interest ->
                         InterestTag(
-                            name = interest.name,
-                            isSelected = selectedInterest == interest.name,
+                            name = interest.interestName,
+                            isSelected = selectedInterest == interest.interestName,
                             onClick = {
-                                viewModel.onInterestClick(if (selectedInterest == interest.name) null else interest.name)
+                                viewModel.onInterestClick(if (selectedInterest == interest.interestName) null else interest.interestName)
                             }
                         )
                     }

@@ -1,6 +1,6 @@
 package kr.ac.uc.test_2025_05_19_k.model
 
 data class Interest(
-    val id: Long,
-    val name: String
+    val interestId: Long,
+    val interestName: String
 )

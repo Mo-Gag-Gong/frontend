@@ -51,15 +51,7 @@ fun SignInProfileSettingScreen(
         unfocusedContainerColor = Color(0xFFF1F1F1)
     )
 
-    // 캐시에 값이 다 있으면 자동 이동
-    LaunchedEffect(name, gender, phoneNumber, birthYear) {
-        if (isFormValid) {
 
-            navController.navigate("interest_select/${name}/${gender}/${phoneNumber}/${birthYear}") {
-                popUpTo("profile_input") { inclusive = true }
-            }
-        }
-    }
 
     Column(
         modifier = Modifier

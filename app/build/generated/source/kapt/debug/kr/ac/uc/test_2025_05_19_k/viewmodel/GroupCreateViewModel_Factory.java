@@ -8,6 +8,7 @@ import dagger.internal.QualifierMetadata;
 import dagger.internal.ScopeMetadata;
 import javax.inject.Provider;
 import kr.ac.uc.test_2025_05_19_k.repository.GroupRepository;
+import kr.ac.uc.test_2025_05_19_k.repository.InterestRepository;
 
 @ScopeMetadata
 @QualifierMetadata
@@ -23,24 +24,29 @@ public final class GroupCreateViewModel_Factory implements Factory<GroupCreateVi
 
   private final Provider<GroupRepository> groupRepositoryProvider;
 
+  private final Provider<InterestRepository> interestRepositoryProvider;
+
   public GroupCreateViewModel_Factory(Provider<Application> applicationProvider,
-      Provider<GroupRepository> groupRepositoryProvider) {
+      Provider<GroupRepository> groupRepositoryProvider,
+      Provider<InterestRepository> interestRepositoryProvider) {
     this.applicationProvider = applicationProvider;
     this.groupRepositoryProvider = groupRepositoryProvider;
+    this.interestRepositoryProvider = interestRepositoryProvider;
   }
 
   @Override
   public GroupCreateViewModel get() {
-    return newInstance(applicationProvider.get(), groupRepositoryProvider.get());
+    return newInstance(applicationProvider.get(), groupRepositoryProvider.get(), interestRepositoryProvider.get());
   }
 
   public static GroupCreateViewModel_Factory create(Provider<Application> applicationProvider,
-      Provider<GroupRepository> groupRepositoryProvider) {
-    return new GroupCreateViewModel_Factory(applicationProvider, groupRepositoryProvider);
+      Provider<GroupRepository> groupRepositoryProvider,
+      Provider<InterestRepository> interestRepositoryProvider) {
+    return new GroupCreateViewModel_Factory(applicationProvider, groupRepositoryProvider, interestRepositoryProvider);
   }
 
   public static GroupCreateViewModel newInstance(Application application,
-      GroupRepository groupRepository) {
-    return new GroupCreateViewModel(application, groupRepository);
+      GroupRepository groupRepository, InterestRepository interestRepository) {
+    return new GroupCreateViewModel(application, groupRepository, interestRepository);
   }
 }
