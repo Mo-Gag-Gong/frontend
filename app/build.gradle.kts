@@ -29,64 +29,87 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/license.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/notice.txt",
+                "META-INF/ASL2.0",
+                "META-INF/INDEX.LIST",
+                "META-INF/io.netty.versions.properties"
+            )
+        }
+    }
+
+
 }
 
 
 
 dependencies {
-    // Kotlin & Coroutines
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.21")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
-    implementation(platform("androidx.compose:compose-bom:2024.05.00")) // 최신버전
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.material3:material3:1.2.1")
-    implementation("androidx.compose.material:material-icons-core:1.6.7") // 최신 안정 버전 확인 권장
-    // Material Icons (확장 아이콘 - 더 많은 아이콘 포함, 필요시 추가)
-    implementation("androidx.compose.material:material-icons-extended:1.6.7") // 최신 안정 버전 확인 권장
-    implementation("androidx.compose.ui:ui-tooling-preview")
+        // Kotlin & Coroutines
+        implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.23")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
-
+        // Jetpack Compose (BOM 방식)
+        implementation(platform("androidx.compose:compose-bom:2024.09.00"))
+        implementation("androidx.compose.ui:ui")
+        implementation("androidx.compose.material3:material3:1.2.1")
+        implementation("androidx.compose.material:material-icons-core:1.6.7")
+        implementation("androidx.compose.material:material-icons-extended:1.6.7")
+        implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation(libs.firebase.appdistribution.gradle)
 
     debugImplementation("androidx.compose.ui:ui-tooling")
 
+        // AppCompat
+        implementation("androidx.appcompat:appcompat:1.7.0")
 
-    // Jetpack Compose (BOM 안정 버전)
-    implementation(libs.androidx.appcompat)
+        // Lifecycle
+        implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0")
+        implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0")
+        implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
 
-    // Lifecycle (2.6.1)
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+        // Activity Compose
+        implementation("androidx.activity:activity:1.9.0")
+        implementation("androidx.activity:activity-ktx:1.9.0")
+        implementation("androidx.activity:activity-compose:1.9.0")
 
-    // Activity Compose (1.7.2)
-    implementation("androidx.activity:activity-compose:1.7.2")
+        // Navigation Compose
+        implementation("androidx.navigation:navigation-compose:2.7.7")
 
-    // Navigation Compose (2.6.0)
-    implementation("androidx.navigation:navigation-compose:2.6.0")
+        // Hilt
+        implementation("com.google.dagger:hilt-android:2.47")
+        kapt("com.google.dagger:hilt-android-compiler:2.47")
+        implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+        kapt("androidx.hilt:hilt-compiler:1.0.0")
 
-    // Hilt (2.47)
-    implementation("com.google.dagger:hilt-android:2.47")
-    kapt("com.google.dagger:hilt-compiler:2.47")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    kapt("androidx.hilt:hilt-compiler:1.0.0")
+        // Javapoet (필요시)
+        implementation("com.squareup:javapoet:1.13.0")
 
-    // Javapoet (1.13.0)
-    implementation("com.squareup:javapoet:1.13.0")
+        // Retrofit
+        implementation("com.squareup.retrofit2:retrofit:2.9.0")
+        implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+        implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
 
-    // Retrofit (2.9.0, 예시)
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+        // Coil (이미지 로딩)
+        implementation("io.coil-kt:coil-compose:2.2.2")
 
-    // 기타 (Coil, Accompanist 등 필요 시)
-    implementation("io.coil-kt:coil-compose:2.2.2")
-    // implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1") // 필요 시
-    implementation("androidx.browser:browser:1.7.0")
-
-    implementation ("com.google.accompanist:accompanist-permissions:0.34.0")
-    implementation("com.google.android.gms:play-services-location:21.2.0")
+        // 기타
+        implementation("androidx.browser:browser:1.7.0")
+        implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+        implementation("com.google.android.gms:play-services-location:21.2.0")
+    }
 
 
 
-}
+
+
+

@@ -11,22 +11,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-// 반드시 추가!
+import androidx.navigation.NavBackStackEntry
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import androidx.compose.ui.tooling.preview.Preview
+
+
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SignInGPSSettingScreen(
+    backStackEntry: NavBackStackEntry,
     onBack: () -> Unit = {},
-    onLocationGranted: () -> Unit = {}
+    onLocationGranted: (List<Long>) -> Unit = {}
 ) {
+    // NavBackStackEntry에서 interestIds 파라미터 추출
+    val interestIdsParam = backStackEntry.arguments?.getString("interestIds") ?: ""
+    val interestIds: List<Long> = interestIdsParam
+        .split(",")
+        .mapNotNull { it.toLongOrNull() }
+        .filter { it > 0 }
+
     val locationPermissionState = rememberPermissionState(
         Manifest.permission.ACCESS_FINE_LOCATION
     )
@@ -36,7 +45,9 @@ fun SignInGPSSettingScreen(
     ) {
         // 상단 뒤로가기
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 12.dp, start = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp, start = 8.dp),
             verticalAlignment = Alignment.Top
         ) {
             IconButton(
@@ -80,7 +91,8 @@ fun SignInGPSSettingScreen(
 
             when {
                 locationPermissionState.status.isGranted -> {
-                    SideEffect { onLocationGranted() }
+                    // 권한 허용 즉시 관심사 ID 리스트 콜백
+                    SideEffect { onLocationGranted(interestIds) }
                     Text("위치 권한이 허용되었습니다.", color = Color.Green)
                 }
                 locationPermissionState.status.shouldShowRationale -> {
@@ -94,8 +106,16 @@ fun SignInGPSSettingScreen(
     }
 }
 
+
 @Preview(showBackground = true, widthDp = 375, heightDp = 812)
 @Composable
 fun PreviewSignInGPSSettingScreen() {
-    SignInGPSSettingScreen()
+    // 프리뷰에서는 backStackEntry 없이 간단한 화면 확인만 지원
+    Box(
+        modifier = Modifier.fillMaxSize().background(Color.White),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("GPS 권한 설정 프리뷰 화면")
+    }
 }
+

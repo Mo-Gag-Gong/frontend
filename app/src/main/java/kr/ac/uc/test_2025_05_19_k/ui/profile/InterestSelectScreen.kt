@@ -1,64 +1,54 @@
 package kr.ac.uc.test_2025_05_19_k.ui.profile
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-
 import androidx.hilt.navigation.compose.hiltViewModel
 import kr.ac.uc.test_2025_05_19_k.model.Interest
 import kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileInputViewModel
 
-import androidx.compose.runtime.*
-import androidx.compose.material3.*
-import androidx.compose.foundation.layout.*
-import androidx.hilt.navigation.compose.hiltViewModel
-
-
-
 @Composable
 fun InterestSelectScreenHost(
-    userName: String,
     navController: NavController,
-    viewModel: ProfileInputViewModel = hiltViewModel(),
-    onNext: () -> Unit = {}
+    viewModel: ProfileInputViewModel = hiltViewModel<ProfileInputViewModel>()
 ) {
-    // 관심사 로드
     val interests = viewModel.interests
-    val loading = viewModel.interestLoading
-    val error = viewModel.interestError
-    val selectedIds = viewModel.selectedInterestIds
+    val interestLoading = viewModel.interestLoading
+    val interestError = viewModel.interestError
+    val selectedInterestIds = viewModel.selectedInterestIds
+    val userName = viewModel.name // 필요시 이름 전달
 
-    // 진입 시 관심사 목록 불러오기
+    // 관심사 목록 불러오기 (최초 1회)
     LaunchedEffect(Unit) { viewModel.loadInterests() }
 
-    when {
-        loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        !error.isNullOrBlank() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(error!!, color = Color.Red)
-        }
-        else -> InterestSelectScreen(
-            interests = interests,
-            selectedIds = selectedIds,
-            userName = userName,
-            navController = navController,
-            onToggle = { id -> viewModel.toggleInterest(id) },
-            onNext = onNext
-        )
-    }
+    InterestSelectScreen(
+        interests = interests,
+        selectedIds = selectedInterestIds,
+        userName = userName,
+        navController = navController,
+        onToggle = { viewModel.toggleInterest(it) },
+        onNext = {
+            // 관심사 선택 완료 후 다음 단계로 이동
+            val idsParam = selectedInterestIds.joinToString(",")
+            navController.navigate("gps_setting?interestIds=$idsParam")
+        },
+        isLoading = interestLoading,
+        errorMsg = interestError
+    )
 }
-
 
 @Composable
 fun InterestSelectScreen(
@@ -67,10 +57,11 @@ fun InterestSelectScreen(
     userName: String,
     navController: NavController,
     onToggle: (Long) -> Unit,
-    onNext: () -> Unit
+    onNext: () -> Unit,
+    isLoading: Boolean = false,
+    errorMsg: String? = null
 ) {
-    var errorMsg by remember { mutableStateOf<String?>(null) }
-    val coroutineScope = rememberCoroutineScope()
+    var localErrorMsg by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -89,13 +80,13 @@ fun InterestSelectScreen(
             Button(
                 onClick = {
                     if (selectedIds.isEmpty()) {
-                        errorMsg = "관심사를 1개 이상 선택해 주세요."
+                        localErrorMsg = "관심사를 1개 이상 선택해 주세요."
                     } else {
-                        errorMsg = null
+                        localErrorMsg = null
                         onNext()
                     }
                 },
-                enabled = selectedIds.isNotEmpty(),
+                enabled = selectedIds.isNotEmpty() && !isLoading,
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (selectedIds.isNotEmpty()) Color(0xFF14C7E5) else Color.LightGray
@@ -112,14 +103,21 @@ fun InterestSelectScreen(
         Text("이제부터 ${userName}님의 관심사를 설정할게요!", fontSize = 14.sp, modifier = Modifier.fillMaxWidth(), color = Color.Black)
         Spacer(modifier = Modifier.height(28.dp))
 
-        // 관심사 2열 그리드
-        InterestCardGrid(
-            interests = interests,
-            selectedIds = selectedIds,
-            onToggle = onToggle
-        )
+        if (isLoading) {
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else if (!errorMsg.isNullOrBlank()) {
+            Text(errorMsg, color = MaterialTheme.colorScheme.error)
+        } else {
+            InterestCardGrid(
+                interests = interests,
+                selectedIds = selectedIds,
+                onToggle = onToggle
+            )
+        }
 
-        errorMsg?.let {
+        localErrorMsg?.let {
             Spacer(modifier = Modifier.height(10.dp))
             Text(it, color = Color.Red, fontSize = 13.sp)
         }
@@ -145,8 +143,8 @@ fun InterestCardGrid(
                 row.forEach { interest ->
                     InterestCard(
                         interest = interest,
-                        selected = selectedIds.contains(interest.id),
-                        onClick = { onToggle(interest.id) }
+                        selected = selectedIds.contains(interest.interestId),
+                        onClick = { onToggle(interest.interestId) }
                     )
                 }
                 if (row.size == 1) {
@@ -175,12 +173,11 @@ fun InterestCard(
                 color = if (selected) Color(0xFF14C7E5) else Color.Gray,
                 shape = RoundedCornerShape(12.dp)
             )
-            .clickable { onClick() }
-            .padding(horizontal = 0.dp, vertical = 0.dp),
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = interest.name, // name 속성으로 출력
+            text = interest.interestName,
             color = if (selected) Color.White else Color.Black,
             fontWeight = FontWeight.SemiBold,
             fontSize = 16.sp
