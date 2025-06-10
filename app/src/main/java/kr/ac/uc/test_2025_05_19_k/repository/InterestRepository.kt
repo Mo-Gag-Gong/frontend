@@ -1,11 +1,34 @@
 package kr.ac.uc.test_2025_05_19_k.repository
 
+import android.util.Log
+import kr.ac.uc.test_2025_05_19_k.model.Interest
+import kr.ac.uc.test_2025_05_19_k.model.InterestDto
 import kr.ac.uc.test_2025_05_19_k.network.ApiService
-import kr.ac.uc.test_2025_05_19_k.network.Interest
 import javax.inject.Inject
 
-class InterestRepository @Inject constructor(private val apiService: ApiService) {
+/**
+ * 관심사 관련 데이터 관리 리포지토리
+ */
+class InterestRepository @Inject constructor(
+    private val api: ApiService
+) {
+    /**
+     * 서버에서 관심사 리스트를 받아옴 (토큰은 Interceptor에서 자동 추가)
+     * @return Interest 목록, 실패 시 빈 리스트 반환
+     */
     suspend fun getAllInterests(): List<Interest> {
-        return apiService.getAllInterests()
+        return try {
+            val dtoList: List<InterestDto> = api.getAllInterests()
+            Log.d("InterestRepository", "서버에서 관심사 수신: ${dtoList.size}개, 데이터=$dtoList")
+            dtoList.map { dto ->
+                Interest(
+                    interestId = dto.interestId,
+                    interestName = dto.interestName
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("InterestRepository", "관심사 목록 조회 실패", e)
+            emptyList()
+        }
     }
 }

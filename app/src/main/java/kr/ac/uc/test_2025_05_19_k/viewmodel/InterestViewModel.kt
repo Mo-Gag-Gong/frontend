@@ -8,8 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kr.ac.uc.test_2025_05_19_k.model.Interest
 import kr.ac.uc.test_2025_05_19_k.network.ApiService
-import kr.ac.uc.test_2025_05_19_k.network.Interest
 import kr.ac.uc.test_2025_05_19_k.repository.InterestRepository
 import javax.inject.Inject
 
@@ -34,5 +34,20 @@ class InterestViewModel @Inject constructor(
                 isLoading = false
             }
         }
+    }
+}
+
+// 예시: InterestSelectViewModel.kt
+class InterestSelectViewModel : ViewModel() {
+    var userName by mutableStateOf("")
+    var gender by mutableStateOf("")
+    var phone by mutableStateOf("")
+    var birth by mutableStateOf("")
+
+    fun setUserInfo(name: String, gender: String, phone: String, birth: String) {
+        this.userName = name
+        this.gender = gender
+        this.phone = phone
+        this.birth = birth
     }
 }

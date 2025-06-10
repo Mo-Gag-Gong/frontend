@@ -1,6 +1,6 @@
 [versions]
 agp = "8.2.0"
-kotlin = "1.9.21"
+kotlin = "1.9.23"
 compose-bom = "2024.09.00"
 hilt = "2.47"
 lifecycle-runtime-ktx = "2.8.0"
