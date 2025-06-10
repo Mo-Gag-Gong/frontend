@@ -8,6 +8,7 @@ import dagger.internal.QualifierMetadata;
 import dagger.internal.ScopeMetadata;
 import javax.inject.Provider;
 import kr.ac.uc.test_2025_05_19_k.network.api.UserApi;
+import kr.ac.uc.test_2025_05_19_k.network.api.UserApiService;
 import kr.ac.uc.test_2025_05_19_k.repository.UserRepository;
 
 @ScopeMetadata("javax.inject.Singleton")
@@ -20,23 +21,28 @@ import kr.ac.uc.test_2025_05_19_k.repository.UserRepository;
     "KotlinInternalInJava"
 })
 public final class RepositoryModule_ProvideUserRepositoryFactory implements Factory<UserRepository> {
-  private final Provider<UserApi> apiProvider;
+  private final Provider<UserApi> userApiProvider;
 
-  public RepositoryModule_ProvideUserRepositoryFactory(Provider<UserApi> apiProvider) {
-    this.apiProvider = apiProvider;
+  private final Provider<UserApiService> userApiServiceProvider;
+
+  public RepositoryModule_ProvideUserRepositoryFactory(Provider<UserApi> userApiProvider,
+      Provider<UserApiService> userApiServiceProvider) {
+    this.userApiProvider = userApiProvider;
+    this.userApiServiceProvider = userApiServiceProvider;
   }
 
   @Override
   public UserRepository get() {
-    return provideUserRepository(apiProvider.get());
+    return provideUserRepository(userApiProvider.get(), userApiServiceProvider.get());
   }
 
   public static RepositoryModule_ProvideUserRepositoryFactory create(
-      Provider<UserApi> apiProvider) {
-    return new RepositoryModule_ProvideUserRepositoryFactory(apiProvider);
+      Provider<UserApi> userApiProvider, Provider<UserApiService> userApiServiceProvider) {
+    return new RepositoryModule_ProvideUserRepositoryFactory(userApiProvider, userApiServiceProvider);
   }
 
-  public static UserRepository provideUserRepository(UserApi api) {
-    return Preconditions.checkNotNullFromProvides(RepositoryModule.INSTANCE.provideUserRepository(api));
+  public static UserRepository provideUserRepository(UserApi userApi,
+      UserApiService userApiService) {
+    return Preconditions.checkNotNullFromProvides(RepositoryModule.INSTANCE.provideUserRepository(userApi, userApiService));
   }
 }

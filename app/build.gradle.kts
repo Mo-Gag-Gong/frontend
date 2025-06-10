@@ -59,13 +59,14 @@ dependencies {
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
         // Jetpack Compose (BOM 방식)
-        implementation(platform("androidx.compose:compose-bom:2024.09.00"))
+        implementation(platform("androidx.compose:compose-bom:2024.08.00"))
         implementation("androidx.compose.ui:ui")
         implementation("androidx.compose.material3:material3:1.2.1")
         implementation("androidx.compose.material:material-icons-core:1.6.7")
         implementation("androidx.compose.material:material-icons-extended:1.6.7")
         implementation("androidx.compose.ui:ui-tooling-preview")
     implementation(libs.firebase.appdistribution.gradle)
+    implementation(libs.play.services.fitness)
 
     debugImplementation("androidx.compose.ui:ui-tooling")
 
@@ -106,7 +107,13 @@ dependencies {
         implementation("androidx.browser:browser:1.7.0")
         implementation("com.google.accompanist:accompanist-permissions:0.34.0")
         implementation("com.google.android.gms:play-services-location:21.2.0")
-    }
+
+
+
+
+
+
+}
 
 
 

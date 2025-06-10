@@ -40,23 +40,34 @@ import kr.ac.uc.test_2025_05_19_k.di.AppModule_ProvideProfileCacheManagerFactory
 import kr.ac.uc.test_2025_05_19_k.di.NetworkModule;
 import kr.ac.uc.test_2025_05_19_k.di.NetworkModule_ProvideApiServiceFactory;
 import kr.ac.uc.test_2025_05_19_k.di.NetworkModule_ProvideAuthInterceptorFactory;
+import kr.ac.uc.test_2025_05_19_k.di.NetworkModule_ProvideGoalApiServiceFactory;
 import kr.ac.uc.test_2025_05_19_k.di.NetworkModule_ProvideGroupApiFactory;
 import kr.ac.uc.test_2025_05_19_k.di.NetworkModule_ProvideGsonFactory;
 import kr.ac.uc.test_2025_05_19_k.di.NetworkModule_ProvideOkHttpClientFactory;
 import kr.ac.uc.test_2025_05_19_k.di.NetworkModule_ProvideRetrofitFactory;
 import kr.ac.uc.test_2025_05_19_k.di.NetworkModule_ProvideTokenManagerFactory;
+import kr.ac.uc.test_2025_05_19_k.di.NetworkModule_ProvideUserApiFactory;
+import kr.ac.uc.test_2025_05_19_k.di.NetworkModule_ProvideUserApiServiceFactory;
 import kr.ac.uc.test_2025_05_19_k.di.RepositoryModule;
 import kr.ac.uc.test_2025_05_19_k.di.RepositoryModule_ProvideGroupRepositoryFactory;
+import kr.ac.uc.test_2025_05_19_k.di.RepositoryModule_ProvideUserRepositoryFactory;
 import kr.ac.uc.test_2025_05_19_k.network.ApiService;
 import kr.ac.uc.test_2025_05_19_k.network.AuthInterceptor;
+import kr.ac.uc.test_2025_05_19_k.network.api.GoalApiService;
 import kr.ac.uc.test_2025_05_19_k.network.api.GroupApi;
+import kr.ac.uc.test_2025_05_19_k.network.api.UserApi;
+import kr.ac.uc.test_2025_05_19_k.network.api.UserApiService;
+import kr.ac.uc.test_2025_05_19_k.repository.GoalRepository;
 import kr.ac.uc.test_2025_05_19_k.repository.GroupRepository;
 import kr.ac.uc.test_2025_05_19_k.repository.InterestRepository;
 import kr.ac.uc.test_2025_05_19_k.repository.ProfileCacheManager;
 import kr.ac.uc.test_2025_05_19_k.repository.ProfileRepository;
 import kr.ac.uc.test_2025_05_19_k.repository.TokenManager;
+import kr.ac.uc.test_2025_05_19_k.repository.UserRepository;
 import kr.ac.uc.test_2025_05_19_k.ui.auth.AuthCallbackActivity;
 import kr.ac.uc.test_2025_05_19_k.ui.auth.AuthCallbackActivity_MembersInjector;
+import kr.ac.uc.test_2025_05_19_k.viewmodel.GoalViewModel;
+import kr.ac.uc.test_2025_05_19_k.viewmodel.GoalViewModel_HiltModules_KeyModule_ProvideFactory;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.GroupAdminDetailViewModel;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.GroupAdminDetailViewModel_HiltModules_KeyModule_ProvideFactory;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.GroupCreateViewModel;
@@ -77,6 +88,8 @@ import kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileInputViewModel;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileInputViewModel_HiltModules_KeyModule_ProvideFactory;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileViewModel;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileViewModel_HiltModules_KeyModule_ProvideFactory;
+import kr.ac.uc.test_2025_05_19_k.viewmodel.UserProfileViewModel;
+import kr.ac.uc.test_2025_05_19_k.viewmodel.UserProfileViewModel_HiltModules_KeyModule_ProvideFactory;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 
@@ -430,7 +443,7 @@ public final class DaggerMyApplication_HiltComponents_SingletonC {
 
     @Override
     public Set<String> getViewModelKeys() {
-      return ImmutableSet.<String>of(GroupAdminDetailViewModel_HiltModules_KeyModule_ProvideFactory.provide(), GroupCreateViewModel_HiltModules_KeyModule_ProvideFactory.provide(), GroupDetailViewModel_HiltModules_KeyModule_ProvideFactory.provide(), GroupEditViewModel_HiltModules_KeyModule_ProvideFactory.provide(), GroupManagementViewModel_HiltModules_KeyModule_ProvideFactory.provide(), HomeViewModel_HiltModules_KeyModule_ProvideFactory.provide(), NoticeCreateViewModel_HiltModules_KeyModule_ProvideFactory.provide(), OnboardingViewModel_HiltModules_KeyModule_ProvideFactory.provide(), ProfileInputViewModel_HiltModules_KeyModule_ProvideFactory.provide(), ProfileViewModel_HiltModules_KeyModule_ProvideFactory.provide());
+      return ImmutableSet.<String>of(GoalViewModel_HiltModules_KeyModule_ProvideFactory.provide(), GroupAdminDetailViewModel_HiltModules_KeyModule_ProvideFactory.provide(), GroupCreateViewModel_HiltModules_KeyModule_ProvideFactory.provide(), GroupDetailViewModel_HiltModules_KeyModule_ProvideFactory.provide(), GroupEditViewModel_HiltModules_KeyModule_ProvideFactory.provide(), GroupManagementViewModel_HiltModules_KeyModule_ProvideFactory.provide(), HomeViewModel_HiltModules_KeyModule_ProvideFactory.provide(), NoticeCreateViewModel_HiltModules_KeyModule_ProvideFactory.provide(), OnboardingViewModel_HiltModules_KeyModule_ProvideFactory.provide(), ProfileInputViewModel_HiltModules_KeyModule_ProvideFactory.provide(), ProfileViewModel_HiltModules_KeyModule_ProvideFactory.provide(), UserProfileViewModel_HiltModules_KeyModule_ProvideFactory.provide());
     }
 
     @Override
@@ -481,6 +494,8 @@ public final class DaggerMyApplication_HiltComponents_SingletonC {
 
     private final ViewModelCImpl viewModelCImpl = this;
 
+    private Provider<GoalViewModel> goalViewModelProvider;
+
     private Provider<GroupAdminDetailViewModel> groupAdminDetailViewModelProvider;
 
     private Provider<GroupCreateViewModel> groupCreateViewModelProvider;
@@ -501,6 +516,8 @@ public final class DaggerMyApplication_HiltComponents_SingletonC {
 
     private Provider<ProfileViewModel> profileViewModelProvider;
 
+    private Provider<UserProfileViewModel> userProfileViewModelProvider;
+
     private ViewModelCImpl(SingletonCImpl singletonCImpl,
         ActivityRetainedCImpl activityRetainedCImpl, SavedStateHandle savedStateHandleParam,
         ViewModelLifecycle viewModelLifecycleParam) {
@@ -511,6 +528,10 @@ public final class DaggerMyApplication_HiltComponents_SingletonC {
 
     }
 
+    private GoalRepository goalRepository() {
+      return new GoalRepository(singletonCImpl.provideGoalApiServiceProvider.get(), singletonCImpl.provideGroupApiProvider.get());
+    }
+
     private InterestRepository interestRepository() {
       return new InterestRepository(singletonCImpl.provideApiServiceProvider.get());
     }
@@ -518,21 +539,23 @@ public final class DaggerMyApplication_HiltComponents_SingletonC {
     @SuppressWarnings("unchecked")
     private void initialize(final SavedStateHandle savedStateHandleParam,
         final ViewModelLifecycle viewModelLifecycleParam) {
-      this.groupAdminDetailViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 0);
-      this.groupCreateViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
-      this.groupDetailViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
-      this.groupEditViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 3);
-      this.groupManagementViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 4);
-      this.homeViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 5);
-      this.noticeCreateViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 6);
-      this.onboardingViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 7);
-      this.profileInputViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 8);
-      this.profileViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 9);
+      this.goalViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 0);
+      this.groupAdminDetailViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
+      this.groupCreateViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
+      this.groupDetailViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 3);
+      this.groupEditViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 4);
+      this.groupManagementViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 5);
+      this.homeViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 6);
+      this.noticeCreateViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 7);
+      this.onboardingViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 8);
+      this.profileInputViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 9);
+      this.profileViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 10);
+      this.userProfileViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 11);
     }
 
     @Override
     public Map<String, Provider<ViewModel>> getHiltViewModelMap() {
-      return ImmutableMap.<String, Provider<ViewModel>>builderWithExpectedSize(10).put("kr.ac.uc.test_2025_05_19_k.viewmodel.GroupAdminDetailViewModel", ((Provider) groupAdminDetailViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.GroupCreateViewModel", ((Provider) groupCreateViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.GroupDetailViewModel", ((Provider) groupDetailViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.GroupEditViewModel", ((Provider) groupEditViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.GroupManagementViewModel", ((Provider) groupManagementViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.HomeViewModel", ((Provider) homeViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.NoticeCreateViewModel", ((Provider) noticeCreateViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.OnboardingViewModel", ((Provider) onboardingViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileInputViewModel", ((Provider) profileInputViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileViewModel", ((Provider) profileViewModelProvider)).build();
+      return ImmutableMap.<String, Provider<ViewModel>>builderWithExpectedSize(12).put("kr.ac.uc.test_2025_05_19_k.viewmodel.GoalViewModel", ((Provider) goalViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.GroupAdminDetailViewModel", ((Provider) groupAdminDetailViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.GroupCreateViewModel", ((Provider) groupCreateViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.GroupDetailViewModel", ((Provider) groupDetailViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.GroupEditViewModel", ((Provider) groupEditViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.GroupManagementViewModel", ((Provider) groupManagementViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.HomeViewModel", ((Provider) homeViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.NoticeCreateViewModel", ((Provider) noticeCreateViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.OnboardingViewModel", ((Provider) onboardingViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileInputViewModel", ((Provider) profileInputViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileViewModel", ((Provider) profileViewModelProvider)).put("kr.ac.uc.test_2025_05_19_k.viewmodel.UserProfileViewModel", ((Provider) userProfileViewModelProvider)).build();
     }
 
     private static final class SwitchingProvider<T> implements Provider<T> {
@@ -556,35 +579,41 @@ public final class DaggerMyApplication_HiltComponents_SingletonC {
       @Override
       public T get() {
         switch (id) {
-          case 0: // kr.ac.uc.test_2025_05_19_k.viewmodel.GroupAdminDetailViewModel 
+          case 0: // kr.ac.uc.test_2025_05_19_k.viewmodel.GoalViewModel 
+          return (T) new GoalViewModel(viewModelCImpl.goalRepository());
+
+          case 1: // kr.ac.uc.test_2025_05_19_k.viewmodel.GroupAdminDetailViewModel 
           return (T) new GroupAdminDetailViewModel(singletonCImpl.provideGroupRepositoryProvider.get(), viewModelCImpl.savedStateHandle);
 
-          case 1: // kr.ac.uc.test_2025_05_19_k.viewmodel.GroupCreateViewModel 
+          case 2: // kr.ac.uc.test_2025_05_19_k.viewmodel.GroupCreateViewModel 
           return (T) new GroupCreateViewModel(ApplicationContextModule_ProvideApplicationFactory.provideApplication(singletonCImpl.applicationContextModule), singletonCImpl.provideGroupRepositoryProvider.get(), viewModelCImpl.interestRepository());
 
-          case 2: // kr.ac.uc.test_2025_05_19_k.viewmodel.GroupDetailViewModel 
+          case 3: // kr.ac.uc.test_2025_05_19_k.viewmodel.GroupDetailViewModel 
           return (T) new GroupDetailViewModel(singletonCImpl.provideGroupRepositoryProvider.get(), viewModelCImpl.savedStateHandle);
 
-          case 3: // kr.ac.uc.test_2025_05_19_k.viewmodel.GroupEditViewModel 
+          case 4: // kr.ac.uc.test_2025_05_19_k.viewmodel.GroupEditViewModel 
           return (T) new GroupEditViewModel(singletonCImpl.provideGroupRepositoryProvider.get(), viewModelCImpl.interestRepository(), viewModelCImpl.savedStateHandle);
 
-          case 4: // kr.ac.uc.test_2025_05_19_k.viewmodel.GroupManagementViewModel 
+          case 5: // kr.ac.uc.test_2025_05_19_k.viewmodel.GroupManagementViewModel 
           return (T) new GroupManagementViewModel(singletonCImpl.provideGroupRepositoryProvider.get());
 
-          case 5: // kr.ac.uc.test_2025_05_19_k.viewmodel.HomeViewModel 
+          case 6: // kr.ac.uc.test_2025_05_19_k.viewmodel.HomeViewModel 
           return (T) new HomeViewModel(ApplicationContextModule_ProvideApplicationFactory.provideApplication(singletonCImpl.applicationContextModule), singletonCImpl.provideGroupRepositoryProvider.get(), viewModelCImpl.interestRepository());
 
-          case 6: // kr.ac.uc.test_2025_05_19_k.viewmodel.NoticeCreateViewModel 
+          case 7: // kr.ac.uc.test_2025_05_19_k.viewmodel.NoticeCreateViewModel 
           return (T) new NoticeCreateViewModel(singletonCImpl.provideGroupRepositoryProvider.get());
 
-          case 7: // kr.ac.uc.test_2025_05_19_k.viewmodel.OnboardingViewModel 
+          case 8: // kr.ac.uc.test_2025_05_19_k.viewmodel.OnboardingViewModel 
           return (T) new OnboardingViewModel(singletonCImpl.provideApiServiceProvider.get());
 
-          case 8: // kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileInputViewModel 
+          case 9: // kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileInputViewModel 
           return (T) new ProfileInputViewModel(singletonCImpl.provideProfileCacheManagerProvider.get(), singletonCImpl.provideApiServiceProvider.get());
 
-          case 9: // kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileViewModel 
+          case 10: // kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileViewModel 
           return (T) new ProfileViewModel(singletonCImpl.profileRepositoryProvider.get());
+
+          case 11: // kr.ac.uc.test_2025_05_19_k.viewmodel.UserProfileViewModel 
+          return (T) new UserProfileViewModel(singletonCImpl.provideUserRepositoryProvider.get(), singletonCImpl.provideTokenManagerProvider.get());
 
           default: throw new AssertionError(id);
         }
@@ -679,6 +708,8 @@ public final class DaggerMyApplication_HiltComponents_SingletonC {
 
     private Provider<Gson> provideGsonProvider;
 
+    private Provider<GoalApiService> provideGoalApiServiceProvider;
+
     private Provider<GroupApi> provideGroupApiProvider;
 
     private Provider<GroupRepository> provideGroupRepositoryProvider;
@@ -686,6 +717,12 @@ public final class DaggerMyApplication_HiltComponents_SingletonC {
     private Provider<ProfileCacheManager> provideProfileCacheManagerProvider;
 
     private Provider<ProfileRepository> profileRepositoryProvider;
+
+    private Provider<UserApi> provideUserApiProvider;
+
+    private Provider<UserApiService> provideUserApiServiceProvider;
+
+    private Provider<UserRepository> provideUserRepositoryProvider;
 
     private SingletonCImpl(ApplicationContextModule applicationContextModuleParam) {
       this.applicationContextModule = applicationContextModuleParam;
@@ -698,15 +735,19 @@ public final class DaggerMyApplication_HiltComponents_SingletonC {
       this.provideTokenManagerProvider = DoubleCheck.provider(new SwitchingProvider<TokenManager>(singletonCImpl, 0));
       this.userPreferenceProvider = DoubleCheck.provider(new SwitchingProvider<UserPreference>(singletonCImpl, 1));
       this.provideRetrofitProvider = new DelegateFactory<>();
-      this.provideApiServiceProvider = DoubleCheck.provider(new SwitchingProvider<ApiService>(singletonCImpl, 7));
-      this.provideAuthInterceptorProvider = DoubleCheck.provider(new SwitchingProvider<AuthInterceptor>(singletonCImpl, 6));
-      this.provideOkHttpClientProvider = DoubleCheck.provider(new SwitchingProvider<OkHttpClient>(singletonCImpl, 5));
-      this.provideGsonProvider = DoubleCheck.provider(new SwitchingProvider<Gson>(singletonCImpl, 8));
-      DelegateFactory.setDelegate(provideRetrofitProvider, DoubleCheck.provider(new SwitchingProvider<Retrofit>(singletonCImpl, 4)));
-      this.provideGroupApiProvider = DoubleCheck.provider(new SwitchingProvider<GroupApi>(singletonCImpl, 3));
-      this.provideGroupRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<GroupRepository>(singletonCImpl, 2));
-      this.provideProfileCacheManagerProvider = DoubleCheck.provider(new SwitchingProvider<ProfileCacheManager>(singletonCImpl, 9));
-      this.profileRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<ProfileRepository>(singletonCImpl, 10));
+      this.provideApiServiceProvider = DoubleCheck.provider(new SwitchingProvider<ApiService>(singletonCImpl, 6));
+      this.provideAuthInterceptorProvider = DoubleCheck.provider(new SwitchingProvider<AuthInterceptor>(singletonCImpl, 5));
+      this.provideOkHttpClientProvider = DoubleCheck.provider(new SwitchingProvider<OkHttpClient>(singletonCImpl, 4));
+      this.provideGsonProvider = DoubleCheck.provider(new SwitchingProvider<Gson>(singletonCImpl, 7));
+      DelegateFactory.setDelegate(provideRetrofitProvider, DoubleCheck.provider(new SwitchingProvider<Retrofit>(singletonCImpl, 3)));
+      this.provideGoalApiServiceProvider = DoubleCheck.provider(new SwitchingProvider<GoalApiService>(singletonCImpl, 2));
+      this.provideGroupApiProvider = DoubleCheck.provider(new SwitchingProvider<GroupApi>(singletonCImpl, 8));
+      this.provideGroupRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<GroupRepository>(singletonCImpl, 9));
+      this.provideProfileCacheManagerProvider = DoubleCheck.provider(new SwitchingProvider<ProfileCacheManager>(singletonCImpl, 10));
+      this.profileRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<ProfileRepository>(singletonCImpl, 11));
+      this.provideUserApiProvider = DoubleCheck.provider(new SwitchingProvider<UserApi>(singletonCImpl, 13));
+      this.provideUserApiServiceProvider = DoubleCheck.provider(new SwitchingProvider<UserApiService>(singletonCImpl, 14));
+      this.provideUserRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<UserRepository>(singletonCImpl, 12));
     }
 
     @Override
@@ -725,7 +766,7 @@ public final class DaggerMyApplication_HiltComponents_SingletonC {
     }
 
     @Override
-    public void injectMyApplication(MyApplication arg0) {
+    public void injectMyApplication(MyApplication myApplication) {
     }
 
     @Override
@@ -753,32 +794,44 @@ public final class DaggerMyApplication_HiltComponents_SingletonC {
           case 1: // kr.ac.uc.test_2025_05_19_k.data.local.UserPreference 
           return (T) new UserPreference(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 2: // kr.ac.uc.test_2025_05_19_k.repository.GroupRepository 
-          return (T) RepositoryModule_ProvideGroupRepositoryFactory.provideGroupRepository(singletonCImpl.provideGroupApiProvider.get());
+          case 2: // kr.ac.uc.test_2025_05_19_k.network.api.GoalApiService 
+          return (T) NetworkModule_ProvideGoalApiServiceFactory.provideGoalApiService(singletonCImpl.provideRetrofitProvider.get());
 
-          case 3: // kr.ac.uc.test_2025_05_19_k.network.api.GroupApi 
-          return (T) NetworkModule_ProvideGroupApiFactory.provideGroupApi(singletonCImpl.provideRetrofitProvider.get());
-
-          case 4: // retrofit2.Retrofit 
+          case 3: // retrofit2.Retrofit 
           return (T) NetworkModule_ProvideRetrofitFactory.provideRetrofit(singletonCImpl.provideOkHttpClientProvider.get(), singletonCImpl.provideGsonProvider.get());
 
-          case 5: // okhttp3.OkHttpClient 
+          case 4: // okhttp3.OkHttpClient 
           return (T) NetworkModule_ProvideOkHttpClientFactory.provideOkHttpClient(singletonCImpl.provideAuthInterceptorProvider.get());
 
-          case 6: // kr.ac.uc.test_2025_05_19_k.network.AuthInterceptor 
+          case 5: // kr.ac.uc.test_2025_05_19_k.network.AuthInterceptor 
           return (T) NetworkModule_ProvideAuthInterceptorFactory.provideAuthInterceptor(singletonCImpl.provideTokenManagerProvider.get(), DoubleCheck.lazy(singletonCImpl.provideApiServiceProvider));
 
-          case 7: // kr.ac.uc.test_2025_05_19_k.network.ApiService 
+          case 6: // kr.ac.uc.test_2025_05_19_k.network.ApiService 
           return (T) NetworkModule_ProvideApiServiceFactory.provideApiService(singletonCImpl.provideRetrofitProvider.get());
 
-          case 8: // com.google.gson.Gson 
+          case 7: // com.google.gson.Gson 
           return (T) NetworkModule_ProvideGsonFactory.provideGson();
 
-          case 9: // kr.ac.uc.test_2025_05_19_k.repository.ProfileCacheManager 
+          case 8: // kr.ac.uc.test_2025_05_19_k.network.api.GroupApi 
+          return (T) NetworkModule_ProvideGroupApiFactory.provideGroupApi(singletonCImpl.provideRetrofitProvider.get());
+
+          case 9: // kr.ac.uc.test_2025_05_19_k.repository.GroupRepository 
+          return (T) RepositoryModule_ProvideGroupRepositoryFactory.provideGroupRepository(singletonCImpl.provideGroupApiProvider.get());
+
+          case 10: // kr.ac.uc.test_2025_05_19_k.repository.ProfileCacheManager 
           return (T) AppModule_ProvideProfileCacheManagerFactory.provideProfileCacheManager(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 10: // kr.ac.uc.test_2025_05_19_k.repository.ProfileRepository 
+          case 11: // kr.ac.uc.test_2025_05_19_k.repository.ProfileRepository 
           return (T) new ProfileRepository(singletonCImpl.provideApiServiceProvider.get());
+
+          case 12: // kr.ac.uc.test_2025_05_19_k.repository.UserRepository 
+          return (T) RepositoryModule_ProvideUserRepositoryFactory.provideUserRepository(singletonCImpl.provideUserApiProvider.get(), singletonCImpl.provideUserApiServiceProvider.get());
+
+          case 13: // kr.ac.uc.test_2025_05_19_k.network.api.UserApi 
+          return (T) NetworkModule_ProvideUserApiFactory.provideUserApi(singletonCImpl.provideRetrofitProvider.get());
+
+          case 14: // kr.ac.uc.test_2025_05_19_k.network.api.UserApiService 
+          return (T) NetworkModule_ProvideUserApiServiceFactory.provideUserApiService(singletonCImpl.provideRetrofitProvider.get());
 
           default: throw new AssertionError(id);
         }

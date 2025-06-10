@@ -7,6 +7,7 @@ import dagger.internal.QualifierMetadata;
 import dagger.internal.ScopeMetadata;
 import javax.inject.Provider;
 import kr.ac.uc.test_2025_05_19_k.network.api.UserApi;
+import kr.ac.uc.test_2025_05_19_k.network.api.UserApiService;
 
 @ScopeMetadata
 @QualifierMetadata
@@ -20,20 +21,25 @@ import kr.ac.uc.test_2025_05_19_k.network.api.UserApi;
 public final class UserRepository_Factory implements Factory<UserRepository> {
   private final Provider<UserApi> userApiProvider;
 
-  public UserRepository_Factory(Provider<UserApi> userApiProvider) {
+  private final Provider<UserApiService> userApiServiceProvider;
+
+  public UserRepository_Factory(Provider<UserApi> userApiProvider,
+      Provider<UserApiService> userApiServiceProvider) {
     this.userApiProvider = userApiProvider;
+    this.userApiServiceProvider = userApiServiceProvider;
   }
 
   @Override
   public UserRepository get() {
-    return newInstance(userApiProvider.get());
+    return newInstance(userApiProvider.get(), userApiServiceProvider.get());
   }
 
-  public static UserRepository_Factory create(Provider<UserApi> userApiProvider) {
-    return new UserRepository_Factory(userApiProvider);
+  public static UserRepository_Factory create(Provider<UserApi> userApiProvider,
+      Provider<UserApiService> userApiServiceProvider) {
+    return new UserRepository_Factory(userApiProvider, userApiServiceProvider);
   }
 
-  public static UserRepository newInstance(UserApi userApi) {
-    return new UserRepository(userApi);
+  public static UserRepository newInstance(UserApi userApi, UserApiService userApiService) {
+    return new UserRepository(userApi, userApiService);
   }
 }

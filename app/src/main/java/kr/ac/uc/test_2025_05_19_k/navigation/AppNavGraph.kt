@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import androidx.navigation.compose.*
 import kotlinx.coroutines.delay
-import kr.ac.uc.test_2025_05_19_k.ui.*
 import kr.ac.uc.test_2025_05_19_k.ui.gps.RegionSettingScreen
 import kr.ac.uc.test_2025_05_19_k.ui.group.create.GroupCreateScreen
 import kr.ac.uc.test_2025_05_19_k.ui.group.detail.GroupDetailScreen
@@ -18,7 +17,6 @@ import kr.ac.uc.test_2025_05_19_k.ui.profile.SignInProfileSettingScreen
 import kr.ac.uc.test_2025_05_19_k.ui.gps.SignInGPSSettingScreen
 import kr.ac.uc.test_2025_05_19_k.ui.profile.InterestSelectScreenHost
 import kr.ac.uc.test_2025_05_19_k.ui.profile.SignInScreen
-import kr.ac.uc.test_2025_05_19_k.ui.schedule.ScheduleScreen
 import kr.ac.uc.test_2025_05_19_k.ui.group.GroupManagementScreen
 import kr.ac.uc.test_2025_05_19_k.ui.profile.MyProfileScreen
 import kr.ac.uc.test_2025_05_19_k.ui.search.SearchScreen
@@ -29,6 +27,7 @@ import kr.ac.uc.test_2025_05_19_k.ui.group.NoticeCreateScreen
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import kr.ac.uc.test_2025_05_19_k.ui.schedule.ScheduleScreen
 import kr.ac.uc.test_2025_05_19_k.viewmodel.InterestSelectViewModel
 import kr.ac.uc.test_2025_05_19_k.viewmodel.OnboardingViewModel
 import kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileInputViewModel
@@ -186,7 +185,7 @@ fun AppNavGraph(
             )
         }
         composable(BottomNavItem.Schedule.route) {
-            ScheduleScreen(navController = navController)
+            ScheduleScreen(navController = navController, groupId = 1L)
         }
         composable(BottomNavItem.GroupManagement.route) {
             GroupManagementScreen(navController = navController)

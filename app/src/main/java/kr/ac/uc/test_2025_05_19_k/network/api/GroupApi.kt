@@ -2,6 +2,7 @@
 package kr.ac.uc.test_2025_05_19_k.network.api
 
 import kr.ac.uc.test_2025_05_19_k.model.GroupNoticeDto
+import kr.ac.uc.test_2025_05_19_k.model.GroupResponse
 import kr.ac.uc.test_2025_05_19_k.model.PageGroupNoticeDto
 import kr.ac.uc.test_2025_05_19_k.model.PageStudyGroupDto
 import kr.ac.uc.test_2025_05_19_k.model.StudyGroup
@@ -42,8 +43,7 @@ interface GroupApi {
         @retrofit2.http.Query("page") page: Int? = 0,
         @retrofit2.http.Query("size") size: Int? = 10
     ): PageStudyGroupDto
-    @GET("/api/groups/my-joined-groups")
-    suspend fun getMyJoinedGroups(): List<StudyGroup> // API 응답이 List<StudyGroupDto> 형태일 것으로 예상
+
 
     @GET("/api/groups/my-owned-groups")
     suspend fun getMyOwnedGroups(): List<StudyGroup> // API 응답이 List<StudyGroupDto> 형태일 것으로 예상
@@ -65,4 +65,7 @@ interface GroupApi {
         @Path("groupId") groupId: Long,
         @Body request: GroupNoticeCreateRequest
     ): GroupNoticeDto // API 명세에 따르면 성공 시 생성된 GroupNoticeDto 반환
+
+    @GET("/api/groups/my-joined-groups")
+    suspend fun getJoinedGroups(): List<GroupResponse>//사용자가 참여하고 있는 스터디 그룹 목록을 가져오는 API
 }

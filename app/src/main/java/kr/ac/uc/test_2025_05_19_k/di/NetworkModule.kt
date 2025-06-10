@@ -12,8 +12,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kr.ac.uc.test_2025_05_19_k.network.ApiService
 import kr.ac.uc.test_2025_05_19_k.network.AuthInterceptor
+import kr.ac.uc.test_2025_05_19_k.network.api.GoalApiService
 import kr.ac.uc.test_2025_05_19_k.network.api.GroupApi
 import kr.ac.uc.test_2025_05_19_k.network.api.UserApi
+import kr.ac.uc.test_2025_05_19_k.network.api.UserApiService
 import kr.ac.uc.test_2025_05_19_k.repository.TokenManager
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -106,6 +108,22 @@ object NetworkModule {
      */
     @Provides
     @Singleton
+    fun provideGoalApiService(retrofit: Retrofit): GoalApiService =
+        retrofit.create(GoalApiService::class.java)
+
+    @Provides
+    @Singleton
     fun provideGroupApi(retrofit: Retrofit): GroupApi =
         retrofit.create(GroupApi::class.java)
+
+
+    @Provides
+    @Singleton
+    fun provideUserApiService(retrofit: Retrofit): UserApiService {
+        return retrofit.create(UserApiService::class.java)
+    }
+
+
+
+
 }

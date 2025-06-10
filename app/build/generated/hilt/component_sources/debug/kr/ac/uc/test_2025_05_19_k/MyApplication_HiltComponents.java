@@ -49,6 +49,7 @@ import kr.ac.uc.test_2025_05_19_k.di.NetworkModule;
 import kr.ac.uc.test_2025_05_19_k.di.RepositoryModule;
 import kr.ac.uc.test_2025_05_19_k.ui.auth.AuthCallbackActivity_GeneratedInjector;
 import kr.ac.uc.test_2025_05_19_k.ui.profile.TokenManagerEntryPoint;
+import kr.ac.uc.test_2025_05_19_k.viewmodel.GoalViewModel_HiltModules;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.GroupAdminDetailViewModel_HiltModules;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.GroupCreateViewModel_HiltModules;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.GroupDetailViewModel_HiltModules;
@@ -59,6 +60,7 @@ import kr.ac.uc.test_2025_05_19_k.viewmodel.NoticeCreateViewModel_HiltModules;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.OnboardingViewModel_HiltModules;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileInputViewModel_HiltModules;
 import kr.ac.uc.test_2025_05_19_k.viewmodel.ProfileViewModel_HiltModules;
+import kr.ac.uc.test_2025_05_19_k.viewmodel.UserProfileViewModel_HiltModules;
 
 public final class MyApplication_HiltComponents {
   private MyApplication_HiltComponents() {
@@ -159,6 +161,7 @@ public final class MyApplication_HiltComponents {
 
   @Subcomponent(
       modules = {
+          GoalViewModel_HiltModules.KeyModule.class,
           GroupAdminDetailViewModel_HiltModules.KeyModule.class,
           GroupCreateViewModel_HiltModules.KeyModule.class,
           GroupDetailViewModel_HiltModules.KeyModule.class,
@@ -171,7 +174,8 @@ public final class MyApplication_HiltComponents {
           NoticeCreateViewModel_HiltModules.KeyModule.class,
           OnboardingViewModel_HiltModules.KeyModule.class,
           ProfileInputViewModel_HiltModules.KeyModule.class,
-          ProfileViewModel_HiltModules.KeyModule.class
+          ProfileViewModel_HiltModules.KeyModule.class,
+          UserProfileViewModel_HiltModules.KeyModule.class
       }
   )
   @ActivityRetainedScoped
@@ -208,6 +212,7 @@ public final class MyApplication_HiltComponents {
 
   @Subcomponent(
       modules = {
+          GoalViewModel_HiltModules.BindsModule.class,
           GroupAdminDetailViewModel_HiltModules.BindsModule.class,
           GroupCreateViewModel_HiltModules.BindsModule.class,
           GroupDetailViewModel_HiltModules.BindsModule.class,
@@ -218,7 +223,8 @@ public final class MyApplication_HiltComponents {
           NoticeCreateViewModel_HiltModules.BindsModule.class,
           OnboardingViewModel_HiltModules.BindsModule.class,
           ProfileInputViewModel_HiltModules.BindsModule.class,
-          ProfileViewModel_HiltModules.BindsModule.class
+          ProfileViewModel_HiltModules.BindsModule.class,
+          UserProfileViewModel_HiltModules.BindsModule.class
       }
   )
   @ViewModelScoped

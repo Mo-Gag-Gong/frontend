@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kr.ac.uc.test_2025_05_19_k.network.api.GroupApi
 import kr.ac.uc.test_2025_05_19_k.network.api.UserApi
+import kr.ac.uc.test_2025_05_19_k.network.api.UserApiService
 import kr.ac.uc.test_2025_05_19_k.repository.GroupRepository
 import kr.ac.uc.test_2025_05_19_k.repository.UserRepository
 import javax.inject.Singleton
@@ -22,7 +23,11 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideUserRepository(api: UserApi): UserRepository {
-        return UserRepository(api)
+    fun provideUserRepository(
+        userApi: UserApi,
+        userApiService: UserApiService
+    ): UserRepository {
+        return UserRepository(userApi, userApiService)
     }
+
 }

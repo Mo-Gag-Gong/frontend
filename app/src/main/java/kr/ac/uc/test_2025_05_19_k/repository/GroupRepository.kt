@@ -39,7 +39,7 @@ class GroupRepository @Inject constructor(
     }
 
     suspend fun getMyJoinedGroups(): List<StudyGroup> {
-        return groupApi.getMyJoinedGroups()
+        return groupApi.getMyOwnedGroups()
     }
 
     /**

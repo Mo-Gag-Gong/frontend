@@ -186,7 +186,7 @@ fun RegionSettingScreen(
                 longitude = location.longitude
                 val city = getCityNameFromLocation(context, latitude!!, longitude!!)
                 if (city != null) {
-                    regionName = city
+                    regionName = simplifyCityName(city)  // 정제된 도시 이름 저장
                 } else {
                     errorMsg = "주소를 불러올 수 없습니다."
                 }
@@ -324,6 +324,18 @@ fun RegionSettingScreen(
         )
     }
 }
+
+fun simplifyCityName(city: String): String {
+    return city
+        .replace("특별시", "")
+        .replace("광역시", "")
+        .replace("특별자치시", "")
+        .replace("특별자치도", "")
+        .replace("자치시", "")
+        .replace("도", "")
+        .trim()
+}
+
 
 
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true, widthDp = 387, heightDp = 812)

@@ -42,6 +42,8 @@ import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_di_NetworkModule;
 import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_di_RepositoryModule;
 import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_ui_auth_AuthCallbackActivity_GeneratedInjector;
 import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_ui_profile_TokenManagerEntryPoint;
+import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_viewmodel_GoalViewModel_HiltModules_BindsModule;
+import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_viewmodel_GoalViewModel_HiltModules_KeyModule;
 import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_viewmodel_GroupAdminDetailViewModel_HiltModules_BindsModule;
 import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_viewmodel_GroupAdminDetailViewModel_HiltModules_KeyModule;
 import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_viewmodel_GroupCreateViewModel_HiltModules_BindsModule;
@@ -62,6 +64,8 @@ import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_viewmodel_ProfileInputVi
 import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_viewmodel_ProfileInputViewModel_HiltModules_KeyModule;
 import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_viewmodel_ProfileViewModel_HiltModules_BindsModule;
 import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_viewmodel_ProfileViewModel_HiltModules_KeyModule;
+import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_viewmodel_UserProfileViewModel_HiltModules_BindsModule;
+import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_viewmodel_UserProfileViewModel_HiltModules_KeyModule;
 
 @ComponentTreeDeps(
     rootDeps = _kr_ac_uc_test_2025_05_19_k_MyApplication.class,
@@ -108,6 +112,8 @@ import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_viewmodel_ProfileViewMod
         _kr_ac_uc_test_2025_05_19_k_di_RepositoryModule.class,
         _kr_ac_uc_test_2025_05_19_k_ui_auth_AuthCallbackActivity_GeneratedInjector.class,
         _kr_ac_uc_test_2025_05_19_k_ui_profile_TokenManagerEntryPoint.class,
+        _kr_ac_uc_test_2025_05_19_k_viewmodel_GoalViewModel_HiltModules_BindsModule.class,
+        _kr_ac_uc_test_2025_05_19_k_viewmodel_GoalViewModel_HiltModules_KeyModule.class,
         _kr_ac_uc_test_2025_05_19_k_viewmodel_GroupAdminDetailViewModel_HiltModules_BindsModule.class,
         _kr_ac_uc_test_2025_05_19_k_viewmodel_GroupAdminDetailViewModel_HiltModules_KeyModule.class,
         _kr_ac_uc_test_2025_05_19_k_viewmodel_GroupCreateViewModel_HiltModules_BindsModule.class,
@@ -127,7 +133,9 @@ import hilt_aggregated_deps._kr_ac_uc_test_2025_05_19_k_viewmodel_ProfileViewMod
         _kr_ac_uc_test_2025_05_19_k_viewmodel_ProfileInputViewModel_HiltModules_BindsModule.class,
         _kr_ac_uc_test_2025_05_19_k_viewmodel_ProfileInputViewModel_HiltModules_KeyModule.class,
         _kr_ac_uc_test_2025_05_19_k_viewmodel_ProfileViewModel_HiltModules_BindsModule.class,
-        _kr_ac_uc_test_2025_05_19_k_viewmodel_ProfileViewModel_HiltModules_KeyModule.class
+        _kr_ac_uc_test_2025_05_19_k_viewmodel_ProfileViewModel_HiltModules_KeyModule.class,
+        _kr_ac_uc_test_2025_05_19_k_viewmodel_UserProfileViewModel_HiltModules_BindsModule.class,
+        _kr_ac_uc_test_2025_05_19_k_viewmodel_UserProfileViewModel_HiltModules_KeyModule.class
     }
 )
 public final class MyApplication_ComponentTreeDeps {
